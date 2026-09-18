@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HX3-F29 Fly Trap Inspection Record</title>
+<style>
+  :root{
+    --primary:#1a5c3a; --primary-dark:#0e3d26; --accent:#e8a13a;
+    --bg:#f4f6f5; --card:#ffffff; --border:#d5dbd8; --text:#1f2a24; --muted:#6b7570;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);}
+  header.app-head{background:var(--primary);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:50;box-shadow:0 2px 6px rgba(0,0,0,.15);}
+  header.app-head h1{font-size:16px;margin:0 0 2px 0;}
+  header.app-head p{margin:0;font-size:11px;opacity:.85;}
+  nav.tabs{display:flex;background:var(--primary-dark);position:sticky;top:56px;z-index:49;}
+  nav.tabs button{flex:1;padding:10px 4px;background:none;border:none;color:#cfe4d8;font-size:13px;cursor:pointer;border-bottom:3px solid transparent;}
+  nav.tabs button.active{color:#fff;border-bottom-color:var(--accent);font-weight:600;}
+  main{max-width:900px;margin:0 auto;padding:12px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+  .field{flex:1;min-width:110px;}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600;}
+  select,input[type=text],input[type=number]{width:100%;padding:9px 8px;border:1px solid var(--border);border-radius:7px;font-size:14px;background:#fff;}
+  .loc-card{border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;background:#fbfcfb;}
+  .loc-card h3{margin:0 0 8px 0;font-size:14px;color:var(--primary-dark);}
+  .cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+  .cat-grid .field label{font-weight:400;}
+  .btn{display:inline-block;background:var(--primary);color:#fff;border:none;padding:11px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;}
+  .btn.secondary{background:#fff;color:var(--primary);border:1px solid var(--primary);}
+  .btn.accent{background:var(--accent);color:#3a2a04;}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+  .checkbox-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
+  .cb-item{display:flex;flex-direction:column;align-items:center;border:1px solid var(--border);border-radius:8px;padding:8px 4px;background:#fbfcfb;}
+  .cb-item span{font-size:11px;color:var(--muted);margin-bottom:4px;}
+  .cb-item input{width:20px;height:20px;}
+  .action-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;}
+  .action-item input{width:18px;height:18px;}
+  .note{font-size:12px;color:var(--muted);background:#eef4f0;border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px;margin-bottom:12px;}
+  .status{font-size:13px;padding:8px 10px;border-radius:7px;margin-top:8px;display:none;}
+  .status.show{display:block;}
+  .status.ok{background:#e4f5ea;color:#1a5c3a;}
+  h2.section-title{font-size:15px;color:var(--primary-dark);margin:4px 0 10px 0;border-bottom:2px solid var(--accent);padding-bottom:4px;}
+
+  /* ---------- PRINT REPLICA STYLES ---------- */
+  .print-sheet{display:none;}
+  .print-controls{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:flex-end;}
+  .doc-page{background:#fff;color:#000;border:1px solid #999;padding:10px;margin-bottom:22px;overflow-x:auto;}
+  table.rep{border-collapse:collapse;width:100%;font-size:9px;background:#fff;color:#000;}
+  table.rep th,table.rep td{border:1px solid #333;padding:2px 3px;text-align:center;color:#000;background:#fff;}
+  table.rep th{font-weight:700;}
+  table.hdr{width:100%;border-collapse:collapse;margin-bottom:6px;background:#fff;color:#000;}
+  table.hdr td{border:1px solid #333;padding:3px 6px;font-size:10px;color:#000;background:#fff;}
+  table.hdr .title-cell{font-weight:700;font-size:11px;text-align:center;color:#000;}
+  table.hdr .title-cell span{color:#000 !important;font-weight:700 !important;font-size:11px !important;}
+  .loc-label{text-align:left !important;font-weight:600;white-space:nowrap;font-size:9px;}
+  .cat-label{text-align:left !important;font-size:9px;color:#333;}
+  .val-cell{min-width:14px;font-size:9px;}
+  .uv-table td, .uv-table th{border:1px solid #333;padding:3px;font-size:9px;vertical-align:top;}
+  .uv-points{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;}
+  .uv-points span{display:inline-block;width:13px;text-align:center;}
+  .uv-points span.notok{font-weight:700;color:#b00000;}
+  .action-cell{text-align:left !important;font-size:8.5px;line-height:1.5;}
+  .signrow td{height:26px;}
+  @media print{
+    header.app-head,nav.tabs,.no-print{display:none !important;}
+    body{background:#fff;}
+    main{max-width:100%;padding:0;}
+    .doc-page{border:none;page-break-after:always;margin:0;padding:4px;}
+    .entry-view{display:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="app-head">
+  <h1>HEXA FOOD SDN BHD (HEXA 3) — Fly Trap Inspection Record</h1>
+  <p>Doc No HX3-F29 · Issue No: 3 · Issue Date: 01/01/2026</p>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="grid">Trap Counts</button>
+  <button class="tab-btn" data-tab="uv">UV Light</button>
+  <button class="tab-btn" data-tab="print">Print / Report</button>
+</nav>
+
+<main>
+
+<!-- ================= TRAP COUNT ENTRY ================= -->
+<section id="tab-grid" class="entry-view">
+  <div class="card">
+    <h2 class="section-title">Weekly Trap Check</h2>
+    <div class="row">
+      <div class="field">
+        <label>Year</label>
+        <input type="number" id="gridYear" value="2026">
+      </div>
+      <div class="field">
+        <label>Month</label>
+        <select id="gridMonth"></select>
+      </div>
+      <div class="field">
+        <label>Week</label>
+        <select id="gridWeek">
+          <option value="1">Week 1</option>
+          <option value="2">Week 2</option>
+          <option value="3">Week 3</option>
+          <option value="4">Week 4</option>
+          <option value="5">Week 5</option>
+        </select>
+      </div>
+    </div>
+    <div class="note">Enter the count found for each category at every location for the selected week. Leave 0 if none found.</div>
+    <div id="locationCards"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="saveGrid()">Save Week</button>
+      <button class="btn secondary" onclick="loadGrid()">Reload</button>
+    </div>
+    <div id="gridStatus" class="status ok"></div>
+  </div>
+</section>
+
+<!-- ================= UV LIGHT ENTRY ================= -->
+<section id="tab-uv" class="entry-view" style="display:none;">
+  <div class="card">
+    <h2 class="section-title">UV Light Condition (Monthly)</h2>
+    <div class="row">
+      <div class="field">
+        <label>Year</label>
+        <input type="number" id="uvYear" value="2026">
+      </div>
+      <div class="field">
+        <label>Month</label>
+        <select id="uvMonth"></select>
+      </div>
+    </div>
+    <div class="note">Tick a trap number if its lamp is <strong>NOT OK</strong> (broken / blinking).</div>
+
+    <label>Lamp 1 — GFT No.</label>
+    <div class="checkbox-grid" id="lamp1Grid"></div>
+
+    <label>Lamp 2 — GFT No.</label>
+    <div class="checkbox-grid" id="lamp2Grid"></div>
+
+    <label>Action Taken</label>
+    <div class="action-item"><input type="checkbox" id="actGlue"><span>Change glue board</span></div>
+    <div class="action-item"><input type="checkbox" id="actLamp1"><span>Change Lamp 1</span></div>
+    <div class="action-item"><input type="checkbox" id="actLamp2"><span>Change Lamp 2</span></div>
+    <div class="field"><label>Others</label><input type="text" id="actOthers" placeholder="Specify other action taken"></div>
+
+    <div class="row" style="margin-top:10px;">
+      <div class="field"><label>Checked By</label><input type="text" id="uvChecked"></div>
+      <div class="field"><label>Verified By</label><input type="text" id="uvVerified"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" onclick="saveUV()">Save Month</button>
+      <button class="btn secondary" onclick="loadUV()">Reload</button>
+    </div>
+    <div id="uvStatus" class="status ok"></div>
+  </div>
+</section>
+
+<!-- ================= PRINT / REPORT ================= -->
+<section id="tab-print">
+  <div class="card no-print">
+    <h2 class="section-title">Generate Printable Record</h2>
+    <div class="print-controls">
+      <div class="field">
+        <label>Year</label>
+        <input type="number" id="printYear" value="2026">
+      </div>
+      <button class="btn" onclick="renderPrint()">Generate</button>
+      <button class="btn accent" onclick="window.print()">Print</button>
+    </div>
+    <div class="note">The pages below are laid out to match the original HX3-F29 paper form (Jan–Jun, Jul–Dec, UV Light sections).</div>
+  </div>
+
+  <div id="printArea"></div>
+</section>
+
+</main>
+
+<script>
+const LOCATIONS = [
+  "1 (Changing Room)",
+  "2 (Mixing room)",
+  "3 (Raw Material Storage)",
+  "4 (Allergen Production)",
+  "5 (Walkway F2)",
+  "6 (Glass Jar and 4in1 Production)",
+  "7 (Reception Area)",
+  "8 (Ziplock Production)"
+];
+const CATEGORIES = ["Flies","Weevils","Bugs","Others"];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const STORE_KEY = "hx3f29_flytrap_data";
+
+// Paste your deployed Google Apps Script Web App URL here (Deploy > New deployment > Web app)
+const APPS_SCRIPT_URL = "PASTE_YOUR_DEPLOYED_WEB_APP_URL_HERE";
+function sheetConfigured(){ return APPS_SCRIPT_URL && APPS_SCRIPT_URL.indexOf("PASTE_") !== 0; }
+
+function loadStore(){
+  try{ return JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); }catch(e){ return {}; }
+}
+function saveStore(data){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(data)); }catch(e){ console.error("storage error",e); }
+}
+function blankYear(){
+  const yd = { grid:{}, uv:{} };
+  for(let l=0;l<LOCATIONS.length;l++){
+    yd.grid[l] = {};
+    for(let c=0;c<CATEGORIES.length;c++){
+      yd.grid[l][c] = {};
+      for(let m=0;m<12;m++) yd.grid[l][c][m] = {1:"",2:"",3:"",4:"",5:""};
+    }
+  }
+  for(let m=0;m<12;m++){
+    yd.uv[m] = { lamp1:new Array(8).fill(false), lamp2:new Array(8).fill(false),
+      action:{glue:false,lamp1:false,lamp2:false,othersText:""}, checkedBy:"", verifiedBy:"" };
+  }
+  return yd;
+}
+function yearData(year){
+  const store = loadStore();
+  if(!store[year]){
+    store[year] = blankYear();
+    saveStore(store);
+  }
+  return store[year];
+}
+function persistYear(year, yd){
+  const store = loadStore();
+  store[year] = yd;
+  saveStore(store);
+}
+
+// ---------- Google Sheet sync ----------
+async function syncFromSheet(){
+  if(!sheetConfigured()) return;
+  try{
+    const res = await fetch(APPS_SCRIPT_URL);
+    const data = await res.json();
+    const store = loadStore();
+    (data.grid||[]).forEach(r=>{
+      const li = LOCATIONS.indexOf(r.location);
+      const ci = CATEGORIES.indexOf(r.category);
+      if(li<0 || ci<0) return;
+      if(!store[r.year]) store[r.year] = blankYear();
+      const yd = store[r.year];
+      if(yd.grid[li] && yd.grid[li][ci] && yd.grid[li][ci][r.month]){
+        yd.grid[li][ci][r.month][r.week] = r.value;
+      }
+    });
+    (data.uv||[]).forEach(r=>{
+      if(!store[r.year]) store[r.year] = blankYear();
+      store[r.year].uv[r.month] = {
+        lamp1: r.lamp1, lamp2: r.lamp2, action: r.action,
+        checkedBy: r.checkedBy||"", verifiedBy: r.verifiedBy||""
+      };
+    });
+    saveStore(store);
+    loadGrid(); loadUV(); renderPrint();
+  }catch(err){ console.error("Sheet sync (load) failed:", err); }
+}
+
+function pushGridToSheet(year, month, week, yd){
+  if(!sheetConfigured()) return;
+  const cells = [];
+  LOCATIONS.forEach((loc,li)=>{
+    CATEGORIES.forEach((cat,ci)=>{
+      cells.push({ location: loc, category: cat, value: yd.grid[li][ci][month][week] || "" });
+    });
+  });
+  fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ action:"saveGrid", year, month, week, cells })
+  }).catch(err=>console.error("Sheet sync (grid save) failed:", err));
+}
+
+function pushUVToSheet(year, month, rec){
+  if(!sheetConfigured()) return;
+  fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      action:"saveUV", year, month,
+      lamp1: rec.lamp1, lamp2: rec.lamp2, action: rec.action,
+      checkedBy: rec.checkedBy, verifiedBy: rec.verifiedBy
+    })
+  }).catch(err=>console.error("Sheet sync (uv save) failed:", err));
+}
+
+// ---------- Tabs ----------
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    ["grid","uv","print"].forEach(t=>{
+      const el = document.getElementById("tab-"+t);
+      if(el) el.style.display = (t===btn.dataset.tab)?"block":"none";
+    });
+  });
+});
+
+function fillMonthSelect(sel){
+  sel.innerHTML = MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+}
+fillMonthSelect(document.getElementById("gridMonth"));
+fillMonthSelect(document.getElementById("uvMonth"));
+
+// ---------- Grid entry ----------
+function buildLocationCards(){
+  const wrap = document.getElementById("locationCards");
+  wrap.innerHTML = LOCATIONS.map((loc,li)=>`
+    <div class="loc-card">
+      <h3>GFT ${li+1}: ${loc}</h3>
+      <div class="cat-grid">
+        ${CATEGORIES.map((cat,ci)=>`
+          <div class="field">
+            <label>${cat}</label>
+            <input type="number" min="0" id="cell_${li}_${ci}" placeholder="0">
+          </div>`).join("")}
+      </div>
+    </div>`).join("");
+}
+buildLocationCards();
+
+function loadGrid(){
+  const year = document.getElementById("gridYear").value;
+  const month = parseInt(document.getElementById("gridMonth").value);
+  const week = document.getElementById("gridWeek").value;
+  const yd = yearData(year);
+  LOCATIONS.forEach((loc,li)=>{
+    CATEGORIES.forEach((cat,ci)=>{
+      const val = yd.grid[li][ci][month][week] ?? "";
+      document.getElementById(`cell_${li}_${ci}`).value = val;
+    });
+  });
+}
+function saveGrid(){
+  const year = document.getElementById("gridYear").value;
+  const month = parseInt(document.getElementById("gridMonth").value);
+  const week = document.getElementById("gridWeek").value;
+  const yd = yearData(year);
+  LOCATIONS.forEach((loc,li)=>{
+    CATEGORIES.forEach((cat,ci)=>{
+      const v = document.getElementById(`cell_${li}_${ci}`).value;
+      yd.grid[li][ci][month][week] = v;
+    });
+  });
+  persistYear(year, yd);
+  pushGridToSheet(year, month, week, yd);
+  const s = document.getElementById("gridStatus");
+  s.textContent = "Saved " + MONTHS[month] + " — Week " + week + " (" + year + ").";
+  s.classList.add("show");
+  setTimeout(()=>s.classList.remove("show"), 2500);
+}
+document.getElementById("gridYear").addEventListener("change", loadGrid);
+document.getElementById("gridMonth").addEventListener("change", loadGrid);
+document.getElementById("gridWeek").addEventListener("change", loadGrid);
+loadGrid();
+
+// ---------- UV entry ----------
+function buildUVCheckboxes(){
+  const l1 = document.getElementById("lamp1Grid");
+  const l2 = document.getElementById("lamp2Grid");
+  l1.innerHTML = ""; l2.innerHTML = "";
+  for(let i=0;i<8;i++){
+    l1.innerHTML += `<div class="cb-item"><span>${i+1}</span><input type="checkbox" id="l1_${i}"></div>`;
+    l2.innerHTML += `<div class="cb-item"><span>${i+1}</span><input type="checkbox" id="l2_${i}"></div>`;
+  }
+}
+buildUVCheckboxes();
+
+function loadUV(){
+  const year = document.getElementById("uvYear").value;
+  const month = parseInt(document.getElementById("uvMonth").value);
+  const yd = yearData(year);
+  const rec = yd.uv[month];
+  for(let i=0;i<8;i++){
+    document.getElementById(`l1_${i}`).checked = !!rec.lamp1[i];
+    document.getElementById(`l2_${i}`).checked = !!rec.lamp2[i];
+  }
+  document.getElementById("actGlue").checked = !!rec.action.glue;
+  document.getElementById("actLamp1").checked = !!rec.action.lamp1;
+  document.getElementById("actLamp2").checked = !!rec.action.lamp2;
+  document.getElementById("actOthers").value = rec.action.othersText || "";
+  document.getElementById("uvChecked").value = rec.checkedBy || "";
+  document.getElementById("uvVerified").value = rec.verifiedBy || "";
+}
+function saveUV(){
+  const year = document.getElementById("uvYear").value;
+  const month = parseInt(document.getElementById("uvMonth").value);
+  const yd = yearData(year);
+  const rec = yd.uv[month];
+  for(let i=0;i<8;i++){
+    rec.lamp1[i] = document.getElementById(`l1_${i}`).checked;
+    rec.lamp2[i] = document.getElementById(`l2_${i}`).checked;
+  }
+  rec.action.glue = document.getElementById("actGlue").checked;
+  rec.action.lamp1 = document.getElementById("actLamp1").checked;
+  rec.action.lamp2 = document.getElementById("actLamp2").checked;
+  rec.action.othersText = document.getElementById("actOthers").value;
+  rec.checkedBy = document.getElementById("uvChecked").value;
+  rec.verifiedBy = document.getElementById("uvVerified").value;
+  persistYear(year, yd);
+  pushUVToSheet(year, month, rec);
+  const s = document.getElementById("uvStatus");
+  s.textContent = "Saved UV Light data for " + MONTHS[month] + " (" + year + ").";
+  s.classList.add("show");
+  setTimeout(()=>s.classList.remove("show"), 2500);
+}
+document.getElementById("uvYear").addEventListener("change", loadUV);
+document.getElementById("uvMonth").addEventListener("change", loadUV);
+loadUV();
+
+// ---------- PRINT REPLICA ----------
+function docHeader(pageNo){
+  return `
+  <table class="hdr">
+    <tr>
+      <td class="title-cell" rowspan="4" style="width:60%;">HEXA FOOD SDN BHD (HEXA 3)<br><span style="font-weight:400;font-size:11px;">FLY TRAP INSPECTION RECORD</span></td>
+      <td style="width:20%;">Doc No</td><td style="width:20%;">HX3-F29</td>
+    </tr>
+    <tr><td>Issue No:</td><td>3</td></tr>
+    <tr><td>Issue Date:</td><td>01/01/2026</td></tr>
+    <tr><td>Page:</td><td>${pageNo}</td></tr>
+  </table>`;
+}
+
+function buildGridPage(yd, year, monthStart, pageNo){
+  const monthsSlice = MONTHS.slice(monthStart, monthStart+6);
+  let head = `<tr><th rowspan="2">GFT No</th><th rowspan="2">Category</th>`;
+  monthsSlice.forEach(m=> head += `<th colspan="5">${m}</th>`);
+  head += `</tr><tr>`;
+  monthsSlice.forEach(()=>{ for(let w=1;w<=5;w++) head += `<th>${w}</th>`; });
+  head += `</tr>`;
+
+  let body = "";
+  LOCATIONS.forEach((loc,li)=>{
+    CATEGORIES.forEach((cat,ci)=>{
+      body += `<tr>`;
+      if(ci===0) body += `<td class="loc-label" rowspan="4">${loc}</td>`;
+      body += `<td class="cat-label">${cat}</td>`;
+      monthsSlice.forEach((m,mi)=>{
+        const monthIdx = monthStart+mi;
+        for(let w=1;w<=5;w++){
+          const v = (yd.grid[li][ci][monthIdx][w]) || "";
+          body += `<td class="val-cell">${v}</td>`;
+        }
+      });
+      body += `</tr>`;
+    });
+  });
+
+  return `
+  <div class="doc-page">
+    ${docHeader(pageNo)}
+    <div style="text-align:right;font-size:10px;margin-bottom:4px;">Year: ${year}</div>
+    <table class="rep">${head}${body}</table>
+    <div class="note" style="margin-top:6px;">Remarks: For category descriptions, refer Appendix.</div>
+  </div>`;
+}
+
+function buildUVPage(yd, year, monthStart, pageNo){
+  const monthsSlice = MONTHS.slice(monthStart, monthStart+6);
+  let head = `<tr><th></th>`;
+  monthsSlice.forEach(m=> head += `<th>${m}</th>`);
+  head += `</tr>`;
+
+  function lampRow(label, key){
+    let row = `<tr><td class="loc-label">${label}<br><span style="font-weight:400;">(X if not OK)</span></td>`;
+    monthsSlice.forEach((m,mi)=>{
+      const rec = yd.uv[monthStart+mi];
+      const pts = rec[key].map((notOk,i)=> `<span class="${notOk?'notok':''}">${notOk?'X':(i+1)}</span>`).join("");
+      row += `<td><div class="uv-points">${pts}</div></td>`;
+    });
+    row += `</tr>`;
+    return row;
+  }
+
+  let actionRow = `<tr><td class="loc-label">Action Taken</td>`;
+  monthsSlice.forEach((m,mi)=>{
+    const rec = yd.uv[monthStart+mi];
+    const lines = [];
+    lines.push(`${rec.action.glue?'☑':'☐'} Change glue board`);
+    lines.push(`${rec.action.lamp1?'☑':'☐'} Change Lamp 1`);
+    lines.push(`${rec.action.lamp2?'☑':'☐'} Change Lamp 2`);
+    lines.push(`${rec.action.othersText?('☑ Others: '+rec.action.othersText):'☐ Others:'}`);
+    actionRow += `<td class="action-cell">${lines.join("<br>")}</td>`;
+  });
+  actionRow += `</tr>`;
+
+  let checkedRow = `<tr class="signrow"><td class="loc-label">Checked by</td>`;
+  monthsSlice.forEach((m,mi)=>{ checkedRow += `<td>${yd.uv[monthStart+mi].checkedBy||""}</td>`; });
+  checkedRow += `</tr>`;
+
+  let verifiedRow = `<tr class="signrow"><td class="loc-label">Verified by</td>`;
+  monthsSlice.forEach((m,mi)=>{ verifiedRow += `<td>${yd.uv[monthStart+mi].verifiedBy||""}</td>`; });
+  verifiedRow += `</tr>`;
+
+  return `
+  <div class="doc-page">
+    ${docHeader(pageNo)}
+    <table class="rep uv-table">
+      ${head}
+      ${lampRow("Condition Lamp 1","lamp1")}
+      ${lampRow("Condition Lamp 2","lamp2")}
+      ${actionRow}
+      ${checkedRow}
+      ${verifiedRow}
+    </table>
+    <div class="note" style="margin-top:6px;">Note for UV Light: Lamp must be functioning well (no broken, not blinking).</div>
+  </div>`;
+}
+
+function renderPrint(){
+  const year = document.getElementById("printYear").value;
+  const yd = yearData(year);
+  const area = document.getElementById("printArea");
+  area.innerHTML =
+    buildGridPage(yd, year, 0, "1 of 4") +
+    buildUVPage(yd, year, 0, "2 of 4") +
+    buildGridPage(yd, year, 6, "3 of 4") +
+    buildUVPage(yd, year, 6, "4 of 4");
+}
+renderPrint();
+syncFromSheet();
+</script>
+</body>
+</html>
