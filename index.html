@@ -42,6 +42,13 @@
   .status.show{display:block;}
   .status.ok{background:#e4f5ea;color:#1a5c3a;}
   h2.section-title{font-size:15px;color:var(--primary-dark);margin:4px 0 10px 0;border-bottom:2px solid var(--accent);padding-bottom:4px;}
+  .ref-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  .ref-card{border:1px solid var(--border);border-radius:10px;padding:10px;background:#fbfcfb;text-align:center;}
+  .ref-card svg{width:56px;height:56px;}
+  .ref-card h4{margin:6px 0 2px 0;font-size:13px;color:var(--primary-dark);}
+  .ref-card span.cat-tag{display:inline-block;font-size:10px;background:var(--primary);color:#fff;border-radius:10px;padding:1px 8px;margin-bottom:4px;}
+  .ref-card p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.4;}
+  @media (min-width:520px){ .ref-grid{grid-template-columns:repeat(3,1fr);} }
 
   /* ---------- PRINT REPLICA STYLES ---------- */
   .print-sheet{display:none;}
@@ -78,10 +85,12 @@
   <h1>HEXA FOOD SDN BHD (HEXA 3) — Fly Trap Inspection Record</h1>
   <p>Doc No HX3-F29 · Issue No: 3 · Issue Date: 01/01/2026</p>
 </header>
+<div id="syncBanner" class="no-print" style="display:none;background:#fff3cd;color:#7a5b00;font-size:12px;padding:8px 14px;border-bottom:1px solid #e8d38a;"></div>
 
 <nav class="tabs">
   <button class="tab-btn active" data-tab="grid">Trap Counts</button>
   <button class="tab-btn" data-tab="uv">UV Light</button>
+  <button class="tab-btn" data-tab="reference">Reference</button>
   <button class="tab-btn" data-tab="print">Print / Report</button>
 </nav>
 
@@ -162,6 +171,15 @@
   </div>
 </section>
 
+<!-- ================= PEST REFERENCE ================= -->
+<section id="tab-reference" style="display:none;">
+  <div class="card">
+    <h2 class="section-title">Pest Category Reference</h2>
+    <div class="note">Quick visual guide to help identify what's caught in the trap. Matches the categories on the record: Flies, Weevils, Bugs, and Others.</div>
+    <div class="ref-grid" id="refGrid"></div>
+  </div>
+</section>
+
 <!-- ================= PRINT / REPORT ================= -->
 <section id="tab-print">
   <div class="card no-print">
@@ -182,7 +200,73 @@
 
 </main>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
+/* ============================================================
+   SHARED DATABASE SETUP (do this ONCE before deploying)
+   So that the checker and verifier can each open this form on
+   their own phone and see the same data, pick ONE shared backend:
+
+   OPTION A — Google Sheets (recommended: easy to view/edit data,
+   familiar spreadsheet format, fully free):
+   1. Create a new Google Sheet.
+   2. Extensions → Apps Script → delete any starter code → paste
+      the Apps Script code provided separately → Save.
+   3. Deploy → New deployment → type "Web app" → Execute as: Me →
+      Who has access: Anyone → Deploy → copy the URL (ends in /exec).
+   4. Paste that URL into SHEET_API_URL below.
+
+   OPTION B — Firebase Firestore:
+   1. https://console.firebase.google.com → Add project (free).
+   2. Firestore Database → Create database → Start in test mode.
+   3. Project settings → Your apps → Web ( </> ) → register → copy
+      the firebaseConfig object → paste into firebaseConfig below.
+
+   If SHEET_API_URL is filled in, it's used. Otherwise, if
+   firebaseConfig is filled in, Firestore is used. If neither is
+   set, the form still works but SAVES ONLY ON THIS DEVICE.
+   ============================================================ */
+const SHEET_API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL";
+
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_API_KEY",
+  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+  projectId: "PASTE_YOUR_PROJECT_ID",
+  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_YOUR_SENDER_ID",
+  appId: "PASTE_YOUR_APP_ID"
+};
+
+const sheetReady = !!(SHEET_API_URL && SHEET_API_URL.indexOf("PASTE_") !== 0);
+let db = null;
+let firebaseReady = false;
+if(!sheetReady){
+  try{
+    if(firebaseConfig.apiKey && firebaseConfig.apiKey.indexOf("PASTE_") !== 0){
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      firebaseReady = true;
+    }
+  }catch(e){ console.error("Firebase init failed:", e); }
+}
+
+const banner = document.getElementById("syncBanner");
+if(sheetReady){
+  banner.style.display = "block";
+  banner.style.background = "#e4f5ea"; banner.style.color = "#1a5c3a"; banner.style.borderBottom = "1px solid #bfe3cd";
+  banner.textContent = "✓ Connected to Google Sheets — entries sync across every device that opens this form.";
+  setTimeout(()=>{ banner.style.display = "none"; }, 4000);
+}else if(firebaseReady){
+  banner.style.display = "block";
+  banner.style.background = "#e4f5ea"; banner.style.color = "#1a5c3a"; banner.style.borderBottom = "1px solid #bfe3cd";
+  banner.textContent = "✓ Connected to Firebase — entries sync across every device that opens this form.";
+  setTimeout(()=>{ banner.style.display = "none"; }, 4000);
+}else{
+  banner.style.display = "block";
+  banner.textContent = "⚠ Not connected to a shared database yet — entries will only be saved on this device. See the setup note at the top of the code file.";
+}
+
 const LOCATIONS = [
   "1 (Changing Room)",
   "2 (Mixing room)",
@@ -195,102 +279,92 @@ const LOCATIONS = [
 ];
 const CATEGORIES = ["Flies","Weevils","Bugs","Others"];
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const STORE_KEY = "hx3f29_flytrap_data";
+const LOCAL_KEY = "hx3f29_flytrap_data_v2";
 
-// Paste your deployed Google Apps Script Web App URL here (Deploy > New deployment > Web app)
-const APPS_SCRIPT_URL = "PASTE_YOUR_DEPLOYED_WEB_APP_URL_HERE";
-function sheetConfigured(){ return APPS_SCRIPT_URL && APPS_SCRIPT_URL.indexOf("PASTE_") !== 0; }
-
-function loadStore(){
-  try{ return JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); }catch(e){ return {}; }
+// ---------- Local fallback storage (used only if no shared backend is configured) ----------
+function loadLocal(){
+  try{ return JSON.parse(localStorage.getItem(LOCAL_KEY) || "{}"); }catch(e){ return {}; }
 }
-function saveStore(data){
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify(data)); }catch(e){ console.error("storage error",e); }
-}
-function blankYear(){
-  const yd = { grid:{}, uv:{} };
-  for(let l=0;l<LOCATIONS.length;l++){
-    yd.grid[l] = {};
-    for(let c=0;c<CATEGORIES.length;c++){
-      yd.grid[l][c] = {};
-      for(let m=0;m<12;m++) yd.grid[l][c][m] = {1:"",2:"",3:"",4:"",5:""};
-    }
-  }
-  for(let m=0;m<12;m++){
-    yd.uv[m] = { lamp1:new Array(8).fill(false), lamp2:new Array(8).fill(false),
-      action:{glue:false,lamp1:false,lamp2:false,othersText:""}, checkedBy:"", verifiedBy:"" };
-  }
-  return yd;
-}
-function yearData(year){
-  const store = loadStore();
-  if(!store[year]){
-    store[year] = blankYear();
-    saveStore(store);
-  }
-  return store[year];
-}
-function persistYear(year, yd){
-  const store = loadStore();
-  store[year] = yd;
-  saveStore(store);
+function saveLocal(store){
+  try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(store)); }catch(e){ console.error("storage error",e); }
 }
 
-// ---------- Google Sheet sync ----------
-async function syncFromSheet(){
-  if(!sheetConfigured()) return;
-  try{
-    const res = await fetch(APPS_SCRIPT_URL);
-    const data = await res.json();
-    const store = loadStore();
-    (data.grid||[]).forEach(r=>{
-      const li = LOCATIONS.indexOf(r.location);
-      const ci = CATEGORIES.indexOf(r.category);
-      if(li<0 || ci<0) return;
-      if(!store[r.year]) store[r.year] = blankYear();
-      const yd = store[r.year];
-      if(yd.grid[li] && yd.grid[li][ci] && yd.grid[li][ci][r.month]){
-        yd.grid[li][ci][r.month][r.week] = r.value;
-      }
-    });
-    (data.uv||[]).forEach(r=>{
-      if(!store[r.year]) store[r.year] = blankYear();
-      store[r.year].uv[r.month] = {
-        lamp1: r.lamp1, lamp2: r.lamp2, action: r.action,
-        checkedBy: r.checkedBy||"", verifiedBy: r.verifiedBy||""
-      };
-    });
-    saveStore(store);
-    loadGrid(); loadUV(); renderPrint();
-  }catch(err){ console.error("Sheet sync (load) failed:", err); }
+// ---------- Google Sheets (Apps Script) helpers ----------
+// Layout: one tab per YEAR (e.g. "2026"), holding both grid + uv rows,
+// distinguished by a "type" column (grid/uv) and a "month" column (0-11).
+async function sheetGet(year, type, month){
+  const url = `${SHEET_API_URL}?year=${encodeURIComponent(year)}&type=${type}&month=${month}`;
+  const res = await fetch(url);
+  const json = await res.json();
+  return json.found ? json.data : null;
 }
-
-function pushGridToSheet(year, month, week, yd){
-  if(!sheetConfigured()) return;
-  const cells = [];
-  LOCATIONS.forEach((loc,li)=>{
-    CATEGORIES.forEach((cat,ci)=>{
-      cells.push({ location: loc, category: cat, value: yd.grid[li][ci][month][week] || "" });
-    });
+async function sheetSet(year, type, month, data){
+  // text/plain avoids a CORS preflight, which Apps Script web apps don't support
+  await fetch(SHEET_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ year, type, month, data })
   });
-  fetch(APPS_SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({ action:"saveGrid", year, month, week, cells })
-  }).catch(err=>console.error("Sheet sync (grid save) failed:", err));
 }
 
-function pushUVToSheet(year, month, rec){
-  if(!sheetConfigured()) return;
-  fetch(APPS_SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({
-      action:"saveUV", year, month,
-      lamp1: rec.lamp1, lamp2: rec.lamp2, action: rec.action,
-      checkedBy: rec.checkedBy, verifiedBy: rec.verifiedBy
-    })
-  }).catch(err=>console.error("Sheet sync (uv save) failed:", err));
+// ---------- Default shapes ----------
+function defaultGridMonth(){
+  const g = {};
+  for(let li=0; li<LOCATIONS.length; li++){
+    g[li] = {};
+    for(let ci=0; ci<CATEGORIES.length; ci++) g[li][ci] = {1:"",2:"",3:"",4:"",5:""};
+  }
+  return g;
+}
+function defaultUvMonth(){
+  return { lamp1:new Array(8).fill(false), lamp2:new Array(8).fill(false),
+    action:{glue:false,lamp1:false,lamp2:false,othersText:""}, checkedBy:"", verifiedBy:"" };
+}
+
+// ---------- Unified data layer: Google Sheets > Firestore > localStorage ----------
+async function getGridDoc(year, month){
+  const key = `${year}_${month}`;
+  if(sheetReady){
+    const data = await sheetGet(year, "grid", month);
+    return data || defaultGridMonth();
+  }
+  if(firebaseReady){
+    const snap = await db.collection("flytrap_grid").doc(key).get();
+    return snap.exists ? snap.data() : defaultGridMonth();
+  }
+  const store = loadLocal();
+  return (store.grid && store.grid[key]) || defaultGridMonth();
+}
+async function setGridDoc(year, month, data){
+  const key = `${year}_${month}`;
+  if(sheetReady){ await sheetSet(year, "grid", month, data); return; }
+  if(firebaseReady){ await db.collection("flytrap_grid").doc(key).set(data); return; }
+  const store = loadLocal();
+  store.grid = store.grid || {};
+  store.grid[key] = data;
+  saveLocal(store);
+}
+async function getUvDoc(year, month){
+  const key = `${year}_${month}`;
+  if(sheetReady){
+    const data = await sheetGet(year, "uv", month);
+    return data || defaultUvMonth();
+  }
+  if(firebaseReady){
+    const snap = await db.collection("flytrap_uv").doc(key).get();
+    return snap.exists ? snap.data() : defaultUvMonth();
+  }
+  const store = loadLocal();
+  return (store.uv && store.uv[key]) || defaultUvMonth();
+}
+async function setUvDoc(year, month, data){
+  const key = `${year}_${month}`;
+  if(sheetReady){ await sheetSet(year, "uv", month, data); return; }
+  if(firebaseReady){ await db.collection("flytrap_uv").doc(key).set(data); return; }
+  const store = loadLocal();
+  store.uv = store.uv || {};
+  store.uv[key] = data;
+  saveLocal(store);
 }
 
 // ---------- Tabs ----------
@@ -298,7 +372,7 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-    ["grid","uv","print"].forEach(t=>{
+    ["grid","uv","reference","print"].forEach(t=>{
       const el = document.getElementById("tab-"+t);
       if(el) el.style.display = (t===btn.dataset.tab)?"block":"none";
     });
@@ -310,6 +384,14 @@ function fillMonthSelect(sel){
 }
 fillMonthSelect(document.getElementById("gridMonth"));
 fillMonthSelect(document.getElementById("uvMonth"));
+
+function setStatus(id, text, ok){
+  const s = document.getElementById(id);
+  s.textContent = text;
+  s.classList.toggle("ok", !!ok);
+  s.classList.add("show");
+  if(ok) setTimeout(()=>s.classList.remove("show"), 2500);
+}
 
 // ---------- Grid entry ----------
 function buildLocationCards(){
@@ -328,35 +410,35 @@ function buildLocationCards(){
 }
 buildLocationCards();
 
-function loadGrid(){
+async function loadGrid(){
   const year = document.getElementById("gridYear").value;
   const month = parseInt(document.getElementById("gridMonth").value);
   const week = document.getElementById("gridWeek").value;
-  const yd = yearData(year);
+  setStatus("gridStatus", "Loading…", false);
+  const g = await getGridDoc(year, month);
   LOCATIONS.forEach((loc,li)=>{
     CATEGORIES.forEach((cat,ci)=>{
-      const val = yd.grid[li][ci][month][week] ?? "";
+      const val = (g[li] && g[li][ci] && g[li][ci][week]) || "";
       document.getElementById(`cell_${li}_${ci}`).value = val;
     });
   });
+  document.getElementById("gridStatus").classList.remove("show");
 }
-function saveGrid(){
+async function saveGrid(){
   const year = document.getElementById("gridYear").value;
   const month = parseInt(document.getElementById("gridMonth").value);
   const week = document.getElementById("gridWeek").value;
-  const yd = yearData(year);
+  setStatus("gridStatus", "Saving…", false);
+  const g = await getGridDoc(year, month);
   LOCATIONS.forEach((loc,li)=>{
+    if(!g[li]) g[li] = {};
     CATEGORIES.forEach((cat,ci)=>{
-      const v = document.getElementById(`cell_${li}_${ci}`).value;
-      yd.grid[li][ci][month][week] = v;
+      if(!g[li][ci]) g[li][ci] = {1:"",2:"",3:"",4:"",5:""};
+      g[li][ci][week] = document.getElementById(`cell_${li}_${ci}`).value;
     });
   });
-  persistYear(year, yd);
-  pushGridToSheet(year, month, week, yd);
-  const s = document.getElementById("gridStatus");
-  s.textContent = "Saved " + MONTHS[month] + " — Week " + week + " (" + year + ").";
-  s.classList.add("show");
-  setTimeout(()=>s.classList.remove("show"), 2500);
+  await setGridDoc(year, month, g);
+  setStatus("gridStatus", "Saved " + MONTHS[month] + " — Week " + week + " (" + year + ").", true);
 }
 document.getElementById("gridYear").addEventListener("change", loadGrid);
 document.getElementById("gridMonth").addEventListener("change", loadGrid);
@@ -375,11 +457,11 @@ function buildUVCheckboxes(){
 }
 buildUVCheckboxes();
 
-function loadUV(){
+async function loadUV(){
   const year = document.getElementById("uvYear").value;
   const month = parseInt(document.getElementById("uvMonth").value);
-  const yd = yearData(year);
-  const rec = yd.uv[month];
+  setStatus("uvStatus", "Loading…", false);
+  const rec = await getUvDoc(year, month);
   for(let i=0;i<8;i++){
     document.getElementById(`l1_${i}`).checked = !!rec.lamp1[i];
     document.getElementById(`l2_${i}`).checked = !!rec.lamp2[i];
@@ -390,34 +472,81 @@ function loadUV(){
   document.getElementById("actOthers").value = rec.action.othersText || "";
   document.getElementById("uvChecked").value = rec.checkedBy || "";
   document.getElementById("uvVerified").value = rec.verifiedBy || "";
+  document.getElementById("uvStatus").classList.remove("show");
 }
-function saveUV(){
+async function saveUV(){
   const year = document.getElementById("uvYear").value;
   const month = parseInt(document.getElementById("uvMonth").value);
-  const yd = yearData(year);
-  const rec = yd.uv[month];
+  setStatus("uvStatus", "Saving…", false);
+  const rec = {
+    lamp1: [], lamp2: [],
+    action: {
+      glue: document.getElementById("actGlue").checked,
+      lamp1: document.getElementById("actLamp1").checked,
+      lamp2: document.getElementById("actLamp2").checked,
+      othersText: document.getElementById("actOthers").value
+    },
+    checkedBy: document.getElementById("uvChecked").value,
+    verifiedBy: document.getElementById("uvVerified").value
+  };
   for(let i=0;i<8;i++){
-    rec.lamp1[i] = document.getElementById(`l1_${i}`).checked;
-    rec.lamp2[i] = document.getElementById(`l2_${i}`).checked;
+    rec.lamp1.push(document.getElementById(`l1_${i}`).checked);
+    rec.lamp2.push(document.getElementById(`l2_${i}`).checked);
   }
-  rec.action.glue = document.getElementById("actGlue").checked;
-  rec.action.lamp1 = document.getElementById("actLamp1").checked;
-  rec.action.lamp2 = document.getElementById("actLamp2").checked;
-  rec.action.othersText = document.getElementById("actOthers").value;
-  rec.checkedBy = document.getElementById("uvChecked").value;
-  rec.verifiedBy = document.getElementById("uvVerified").value;
-  persistYear(year, yd);
-  pushUVToSheet(year, month, rec);
-  const s = document.getElementById("uvStatus");
-  s.textContent = "Saved UV Light data for " + MONTHS[month] + " (" + year + ").";
-  s.classList.add("show");
-  setTimeout(()=>s.classList.remove("show"), 2500);
+  await setUvDoc(year, month, rec);
+  setStatus("uvStatus", "Saved UV Light data for " + MONTHS[month] + " (" + year + ").", true);
 }
 document.getElementById("uvYear").addEventListener("change", loadUV);
 document.getElementById("uvMonth").addEventListener("change", loadUV);
 loadUV();
 
-// ---------- PRINT REPLICA ----------
+// ---------- Pest Reference (categories/names follow the uploaded PDF appendix) ----------
+const ICONS = {
+  fly: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="32" cy="34" rx="10" ry="14"/><circle cx="32" cy="16" r="7"/><ellipse cx="18" cy="24" rx="12" ry="6" transform="rotate(-25 18 24)" opacity=".55"/><ellipse cx="46" cy="24" rx="12" ry="6" transform="rotate(25 46 24)" opacity=".55"/><path d="M24 40 L14 46 M24 44 L13 52 M40 40 L50 46 M40 44 L51 52"/></svg>`,
+  weevil: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="36" cy="34" rx="16" ry="11"/><path d="M20 32 L8 30"/><circle cx="20" cy="32" r="4"/><path d="M12 24 L16 28 M10 22 L15 27"/><path d="M22 22 L28 46 M30 20 L34 48 M38 22 L44 46 M46 24 L50 42"/></svg>`,
+  beetle: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="32" cy="36" rx="16" ry="18"/><line x1="32" y1="20" x2="32" y2="52"/><circle cx="32" cy="14" r="6"/><path d="M27 9 L22 4 M37 9 L42 4"/><path d="M20 26 L8 22 M20 36 L6 36 M20 46 L8 50 M44 26 L56 22 M44 36 L58 36 M44 46 L56 50"/></svg>`,
+  cockroach: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="32" cy="36" rx="18" ry="14"/><path d="M20 24 L10 12 M24 22 L18 8"/><path d="M16 28 L4 24 M16 36 L2 36 M16 44 L4 48 M48 28 L60 24 M48 36 L62 36 M48 44 L60 48"/></svg>`,
+  mosquito: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="34" cy="32" rx="7" ry="16" transform="rotate(20 34 32)"/><path d="M28 18 L14 6"/><ellipse cx="20" cy="24" rx="14" ry="6" transform="rotate(-15 20 24)" opacity=".5"/><path d="M30 34 L14 40 M34 38 L20 50 M38 40 L28 58 M40 30 L54 30 M42 34 L54 42"/></svg>`,
+  spider: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="30" r="9"/><circle cx="32" cy="46" r="12"/><path d="M26 24 L10 14 M22 28 L4 26 M22 34 L4 38 M26 40 L12 52 M38 24 L54 14 M42 28 L60 26 M42 34 L60 38 M38 40 L52 52"/></svg>`,
+  dragonfly: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="32" y1="10" x2="32" y2="54"/><circle cx="32" cy="10" r="5"/><ellipse cx="14" cy="22" rx="16" ry="5" transform="rotate(-8 14 22)" opacity=".5"/><ellipse cx="50" cy="22" rx="16" ry="5" transform="rotate(8 50 22)" opacity=".5"/><ellipse cx="16" cy="34" rx="15" ry="4.5" transform="rotate(-4 16 34)" opacity=".5"/><ellipse cx="48" cy="34" rx="15" ry="4.5" transform="rotate(4 48 34)" opacity=".5"/></svg>`,
+  ant: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="16" r="6"/><circle cx="32" cy="30" r="6"/><ellipse cx="32" cy="46" rx="10" ry="12"/><path d="M27 12 L18 6 M37 12 L46 6"/><path d="M25 27 L12 22 M25 32 L10 34 M25 37 L12 44 M39 27 L52 22 M39 32 L54 34 M39 37 L52 44"/></svg>`,
+  lizard: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="28" cy="32" rx="14" ry="8"/><circle cx="14" cy="26" r="5"/><path d="M40 34 Q54 40 58 54"/><path d="M20 26 L14 16 M18 40 L10 48 M36 26 L40 16 M36 40 L42 48"/></svg>`
+};
+
+const REFERENCE = [
+  { tag:"Flies", title:"House Flies & Relatives", icon:ICONS.fly,
+    names:"House Fly, Blow Fly, Fruit Fly, Drain Fly, Flesh Fly, Cluster Fly, Stable Fly, Phorid Fly, Cheese Skipper, Filter Fly, Fungus Gnat, Moth Fly, Sphaerocerid Fly, Soldier Fly, Latrine Fly, Sewer Fly, Vinegar Fly, Sand Fly, Hover Fly, Scuttle Fly, Deer Fly" },
+  { tag:"Weevils", title:"Stored-Product Weevils & Beetles", icon:ICONS.weevil,
+    names:"Rhyzopertha dominica, Sitophilus granarius, Sitophilus oryzae, Sitophilus zeamais, Trogoderma granarium, Prostephanus truncatus, Tribolium castaneum, Tribolium confusum, Cryptolestes ferrugineus, Oryzaephilus surinamensis, Oryzaephilus mercator, Cryptolestes turcicus, Gnatocerus cornutus, Lasioderma serricorne, Stegobium paniceum" },
+  { tag:"Bugs", title:"Beetles", icon:ICONS.beetle,
+    desc:"Hard, shell-like wing covers (elytra) meeting in a straight line down the back; compact oval body; various sizes and colours." },
+  { tag:"Others · 1", title:"Cockroaches", icon:ICONS.cockroach,
+    desc:"Flat oval body, long thread-like antennae, reddish-brown to dark brown, mostly active at night." },
+  { tag:"Others · 2", title:"Mosquito", icon:ICONS.mosquito,
+    desc:"Slender body, long thin legs, needle-like proboscis; often near standing water." },
+  { tag:"Others · 3", title:"Spiders", icon:ICONS.spider,
+    desc:"8 legs, two main body segments (no antennae); some spin webs." },
+  { tag:"Others · 4", title:"Dragonflies / Damselflies", icon:ICONS.dragonfly,
+    desc:"Long slender body, 2 pairs of wings. Dragonflies rest with wings out; damselflies fold theirs together." },
+  { tag:"Others · 5", title:"Ants", icon:ICONS.ant,
+    desc:"3 distinct body segments, elbowed (bent) antennae, usually seen travelling in trails." },
+  { tag:"Others · 6", title:"Lizards (Geckos)", icon:ICONS.lizard,
+    desc:"Small reptile, 4 legs, long tail; commonly found on walls/ceilings near lights." }
+];
+
+function buildReferenceGrid(){
+  const wrap = document.getElementById("refGrid");
+  wrap.innerHTML = REFERENCE.map(r => `
+    <div class="ref-card">
+      <div style="color:var(--primary-dark);">${r.icon}</div>
+      <span class="cat-tag">${r.tag}</span>
+      <h4>${r.title}</h4>
+      <p>${r.desc ? r.desc : r.names}</p>
+    </div>`).join("");
+}
+buildReferenceGrid();
+
+
 function docHeader(pageNo){
   return `
   <table class="hdr">
@@ -517,10 +646,26 @@ function buildUVPage(yd, year, monthStart, pageNo){
   </div>`;
 }
 
-function renderPrint(){
+async function renderPrint(){
   const year = document.getElementById("printYear").value;
-  const yd = yearData(year);
   const area = document.getElementById("printArea");
+  area.innerHTML = `<p class="note">Loading data…</p>`;
+
+  const gridDocs = await Promise.all(Array.from({length:12}, (_,m)=>getGridDoc(year,m)));
+  const uvDocs = await Promise.all(Array.from({length:12}, (_,m)=>getUvDoc(year,m)));
+
+  const yd = { grid:{}, uv:{} };
+  for(let li=0; li<LOCATIONS.length; li++){
+    yd.grid[li] = {};
+    for(let ci=0; ci<CATEGORIES.length; ci++){
+      yd.grid[li][ci] = {};
+      for(let m=0;m<12;m++){
+        yd.grid[li][ci][m] = (gridDocs[m][li] && gridDocs[m][li][ci]) || {1:"",2:"",3:"",4:"",5:""};
+      }
+    }
+  }
+  for(let m=0;m<12;m++) yd.uv[m] = uvDocs[m];
+
   area.innerHTML =
     buildGridPage(yd, year, 0, "1 of 4") +
     buildUVPage(yd, year, 0, "2 of 4") +
@@ -528,7 +673,6 @@ function renderPrint(){
     buildUVPage(yd, year, 6, "4 of 4");
 }
 renderPrint();
-syncFromSheet();
 </script>
 </body>
 </html>
