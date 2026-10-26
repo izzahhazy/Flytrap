@@ -1,678 +1,607 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HX3-F29 Fly Trap Inspection Record</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --primary:#1a5c3a; --primary-dark:#0e3d26; --accent:#e8a13a;
-    --bg:#f4f6f5; --card:#ffffff; --border:#d5dbd8; --text:#1f2a24; --muted:#6b7570;
-  }
-  *{box-sizing:border-box;}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);}
-  header.app-head{background:var(--primary);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:50;box-shadow:0 2px 6px rgba(0,0,0,.15);}
-  header.app-head h1{font-size:16px;margin:0 0 2px 0;}
-  header.app-head p{margin:0;font-size:11px;opacity:.85;}
-  nav.tabs{display:flex;background:var(--primary-dark);position:sticky;top:56px;z-index:49;}
-  nav.tabs button{flex:1;padding:10px 4px;background:none;border:none;color:#cfe4d8;font-size:13px;cursor:pointer;border-bottom:3px solid transparent;}
-  nav.tabs button.active{color:#fff;border-bottom-color:var(--accent);font-weight:600;}
-  main{max-width:900px;margin:0 auto;padding:12px;}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
-  .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
-  .field{flex:1;min-width:110px;}
-  label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600;}
-  select,input[type=text],input[type=number]{width:100%;padding:9px 8px;border:1px solid var(--border);border-radius:7px;font-size:14px;background:#fff;}
-  .loc-card{border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;background:#fbfcfb;}
-  .loc-card h3{margin:0 0 8px 0;font-size:14px;color:var(--primary-dark);}
-  .cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
-  .cat-grid .field label{font-weight:400;}
-  .btn{display:inline-block;background:var(--primary);color:#fff;border:none;padding:11px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;}
-  .btn.secondary{background:#fff;color:var(--primary);border:1px solid var(--primary);}
-  .btn.accent{background:var(--accent);color:#3a2a04;}
-  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
-  .checkbox-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
-  .cb-item{display:flex;flex-direction:column;align-items:center;border:1px solid var(--border);border-radius:8px;padding:8px 4px;background:#fbfcfb;}
-  .cb-item span{font-size:11px;color:var(--muted);margin-bottom:4px;}
-  .cb-item input{width:20px;height:20px;}
-  .action-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;}
-  .action-item input{width:18px;height:18px;}
-  .note{font-size:12px;color:var(--muted);background:#eef4f0;border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px;margin-bottom:12px;}
-  .status{font-size:13px;padding:8px 10px;border-radius:7px;margin-top:8px;display:none;}
-  .status.show{display:block;}
-  .status.ok{background:#e4f5ea;color:#1a5c3a;}
-  h2.section-title{font-size:15px;color:var(--primary-dark);margin:4px 0 10px 0;border-bottom:2px solid var(--accent);padding-bottom:4px;}
-  .ref-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
-  .ref-card{border:1px solid var(--border);border-radius:10px;padding:10px;background:#fbfcfb;text-align:center;}
-  .ref-card svg{width:56px;height:56px;}
-  .ref-card h4{margin:6px 0 2px 0;font-size:13px;color:var(--primary-dark);}
-  .ref-card span.cat-tag{display:inline-block;font-size:10px;background:var(--primary);color:#fff;border-radius:10px;padding:1px 8px;margin-bottom:4px;}
-  .ref-card p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.4;}
-  @media (min-width:520px){ .ref-grid{grid-template-columns:repeat(3,1fr);} }
+:root{--ink:#1f2a24;--green:#1b5e3a;--bg:#f5f5f0;--line:#cfd3cc;--mut:#6b736d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,Helvetica,sans-serif;font-size:15px}
+.app{max-width:1100px;margin:0 auto;padding:12px}
+.banner{border-radius:8px;padding:12px 16px;font-size:14px;margin-bottom:14px;border:1px solid}
+.banner.ok{background:#e3f1e8;border-color:#9fd0b0;color:#1b4d2e}
+.banner.warn{background:#fff6dd;border-color:#e6cf86;color:#6b5200}
+.banner.err{background:#fde8e6;border-color:#e6a39c;color:#7a1f16}
+.hdr{display:flex;background:#fff;border:1px solid var(--ink);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.hdr .l{flex:1;padding:18px 18px}
+.hdr .l b{display:block;font-size:17px;margin-bottom:4px}
+.hdr .l span{color:var(--green);font-weight:600;font-size:17px}
+.hdr .r{width:250px;border-left:1px solid var(--ink)}
+.hdr .r div{display:flex;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13px;color:var(--mut)}
+.hdr .r div:last-child{border:0}
+.hdr .r em{font-style:normal;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--ink)}
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:14px}
+.tabs button{padding:14px 8px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--mut);font:600 15px Inter,Arial;cursor:pointer}
+.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 10px;font-size:15px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mut);font-weight:500}
+input,select{font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);min-width:0}
+input[type=text],input:not([type]){width:100%}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button,.pill{padding:10px 14px;border:1px solid var(--line);background:#fff;border-radius:8px;font:600 14px Inter,Arial;cursor:pointer;color:var(--ink)}
+.seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pill.x.on{background:#c62828;border-color:#c62828;color:#fff}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.grid8{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.chk{display:flex;gap:8px;align-items:center;padding:6px 0}
+.chk input{width:20px;height:20px}
+.primary{background:var(--green);color:#fff;border:0;border-radius:10px;padding:14px 18px;font:600 15px Inter,Arial;cursor:pointer;width:100%}
+.sec{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:12px 16px;font:600 14px Inter,Arial;cursor:pointer;text-decoration:none;display:inline-block}
+.danger{color:#c62828;border-color:#e6a39c}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+.kpi b{display:block;font-size:22px;margin:2px 0}
+.kpi span{font-size:12px;color:var(--mut)}
+.up{color:#c62828}.down{color:#1b5e3a}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin:6px 0}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px}
+.hm{border-collapse:collapse;font-size:12px;min-width:560px;width:100%}
+.hm th,.hm td{border:1px solid var(--line);padding:5px 4px;text-align:center}
+.hm th{background:#f0f2ee;font-weight:600}
+.hm td.l{text-align:left;white-space:nowrap}
+.tw{overflow-x:auto}
+.st span{display:block;font-size:12px;color:var(--mut);font-weight:500;margin-bottom:4px}
+.st>div{display:flex;gap:4px}
+.st button{width:44px;height:48px;flex:none;border:1px solid var(--line);background:#f0f2ee;border-radius:8px;font:600 22px Inter,Arial;cursor:pointer;color:var(--ink);touch-action:manipulation}
+.st button:active{background:var(--ink);color:#fff}
+.st input{text-align:center;font-size:18px;font-weight:600;height:48px;padding:0;min-width:0;flex:1;width:100%}
+.adm h3{margin:16px 0 8px}
+.adm .rowl{display:grid;grid-template-columns:70px 1fr 44px;gap:6px;margin-bottom:6px}
+.adm .rowl button{border:1px solid var(--line);background:#fff;border-radius:8px;color:#c62828;font-size:18px;cursor:pointer}
+.adm .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.msg{padding:10px 12px;border-radius:8px;background:#e3f1e8;color:#1b4d2e;font-size:13px;margin-bottom:10px}
+.msg.bad{background:#fde8e6;color:#7a1f16}
+#appTitle{text-transform:capitalize}
+.hide{display:none!important}
+.small{font-size:12px;color:var(--mut)}
+iframe{width:100%;height:70vh;border:1px solid var(--line);border-radius:10px;background:#fff}
+@media(max-width:640px){
+ .hdr{flex-direction:column}.hdr .r{width:auto;border-left:0;border-top:1px solid var(--ink)}
+ .grid4{grid-template-columns:repeat(2,1fr)}.grid8{grid-template-columns:repeat(4,1fr)}
+}
 
-  /* ---------- PRINT REPLICA STYLES ---------- */
-  .print-sheet{display:none;}
-  .print-controls{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:flex-end;}
-  .doc-page{background:#fff;color:#000;border:1px solid #999;padding:10px;margin-bottom:22px;overflow-x:auto;}
-  table.rep{border-collapse:collapse;width:100%;font-size:9px;background:#fff;color:#000;}
-  table.rep th,table.rep td{border:1px solid #333;padding:2px 3px;text-align:center;color:#000;background:#fff;}
-  table.rep th{font-weight:700;}
-  table.hdr{width:100%;border-collapse:collapse;margin-bottom:6px;background:#fff;color:#000;}
-  table.hdr td{border:1px solid #333;padding:3px 6px;font-size:10px;color:#000;background:#fff;}
-  table.hdr .title-cell{font-weight:700;font-size:11px;text-align:center;color:#000;}
-  table.hdr .title-cell span{color:#000 !important;font-weight:700 !important;font-size:11px !important;}
-  .loc-label{text-align:left !important;font-weight:600;white-space:nowrap;font-size:9px;}
-  .cat-label{text-align:left !important;font-size:9px;color:#333;}
-  .val-cell{min-width:14px;font-size:9px;}
-  .uv-table td, .uv-table th{border:1px solid #333;padding:3px;font-size:9px;vertical-align:top;}
-  .uv-points{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;}
-  .uv-points span{display:inline-block;width:13px;text-align:center;}
-  .uv-points span.notok{font-weight:700;color:#b00000;}
-  .action-cell{text-align:left !important;font-size:8.5px;line-height:1.5;}
-  .signrow td{height:26px;}
-  @media print{
-    header.app-head,nav.tabs,.no-print{display:none !important;}
-    body{background:#fff;}
-    main{max-width:100%;padding:0;}
-    .doc-page{border:none;page-break-after:always;margin:0;padding:4px;}
-    .entry-view{display:none !important;}
-  }
-</style>
-</head>
-<body>
+/* ===== printable form (same as original) ===== */
+.wrap{overflow-x:auto;padding:4px 0}
+.sheet{background:#fff;width:277mm;min-width:277mm;margin:0 auto 14px;font-size:8.5px;color:#000;font-family:Arial,Helvetica,sans-serif}
+.sheet table{border-collapse:collapse;width:100%;table-layout:fixed}
+.sheet td{border:1px solid #000;padding:1px 2px;text-align:center;vertical-align:middle;overflow:hidden}
+.sheet table.hd{margin:0 0 -1px 0}
+.sheet table.hd td{height:4.6mm;padding:0 3px;text-align:left;font-size:9px;font-weight:normal;white-space:nowrap}
+.sheet table.hd td.co{text-align:center;font-weight:bold;font-size:10.5px;white-space:normal}
+.sheet{padding:0;line-height:normal}
+.sheet .b{font-weight:bold}
+.sheet .gft{font-weight:bold;font-size:8px;line-height:1.1}
+.sheet .cat{text-align:left;padding-left:4px}
+.sheet td.c{height:var(--rh,4.5mm);padding:0}
+.sheet input{border:0;background:transparent;padding:0;border-radius:0;text-align:center;font:9px Arial;color:#000;pointer-events:none;width:100%;height:100%}
+.sheet .wk{display:flex;justify-content:space-around;align-items:center;font-size:8px;line-height:1}
+.pk{display:inline-block;min-width:10px;height:11px;line-height:11px;text-align:center;position:relative}
+.pk.on.w{border:1px solid #000;border-radius:50%}
+.pk.on.u{font-weight:bold}
+.pk.on.u::after{content:"X";position:absolute;inset:0;font-weight:bold;font-size:12px;line-height:11px;color:#c00}
+.uv{display:flex;flex-wrap:nowrap;justify-content:center;align-items:center;gap:0;font-size:6.5px;padding:3px 0;white-space:nowrap}
+.uv .pk{min-width:0;padding:0 .6px;height:9px;line-height:9px}
+.uv .pk.on.u::after{font-size:9px;line-height:9px}
+.act{text-align:left!important;font-size:7.5px;line-height:1.25;padding:2px 3px!important;vertical-align:top!important}
+.act label{display:flex;gap:2px;align-items:flex-start;margin:0 0 1px;pointer-events:none}
+.act input[type=checkbox]{margin:0;width:9px;height:9px;flex:none}
+.act input[type=text]{border-bottom:1px dotted #000;font-size:8px;text-align:left}
+.sheet td.sign{height:9mm}
+.note{font-size:9px;margin-top:3px}
+.sheet .yrline{font-size:9px;margin:4mm 0 3mm 2px;height:4mm}
+.sheet .yrline input{display:inline-block;width:60px;height:12px;font:9px Arial;text-align:left;margin-left:2px}
+@page{size:A4 landscape;margin:8mm}
+@media print{
+ body{background:#fff}
+ .app>*:not(#v-print){display:none!important}
+ #v-print .noprint{display:none!important}
+ .wrap{overflow:visible}
+ .sheet{margin:0;page-break-after:always;break-after:page}
+ .sheet:last-child{page-break-after:auto;break-after:auto}
+ .app{padding:0;max-width:none}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style></head><body>
+<div class="app">
+ <div id="banner" class="banner warn">Loading…</div>
 
-<header class="app-head">
-  <h1>HEXA FOOD SDN BHD (HEXA 3) — Fly Trap Inspection Record</h1>
-  <p>Doc No HX3-F29 · Issue No: 3 · Issue Date: 01/01/2026</p>
-</header>
-<div id="syncBanner" class="no-print" style="display:none;background:#fff3cd;color:#7a5b00;font-size:12px;padding:8px 14px;border-bottom:1px solid #e8d38a;"></div>
+ <div class="hdr">
+  <div class="l"><b id="appCo">HEXA FOOD SDN BHD (HEXA 3)</b><span id="appTitle">Fly Trap Inspection Record — Digital</span></div>
+  <div class="r"><div>Form No.<em id="appDoc">HX3-F29</em></div><div>Issue No.<em id="appIssue">3</em></div><div>Issue Date<em id="appDate">01/01/2026</em></div></div>
+ </div>
 
-<nav class="tabs">
-  <button class="tab-btn active" data-tab="grid">Trap Counts</button>
-  <button class="tab-btn" data-tab="uv">UV Light</button>
-  <button class="tab-btn" data-tab="reference">Reference</button>
-  <button class="tab-btn" data-tab="print">Print / Report</button>
-</nav>
+ <div class="tabs">
+  <button class="on" data-tab="fill">Fill checklist</button>
+  <button data-tab="print">Records / Print</button>
+  <button data-tab="sheet">Google Sheet</button>
+  <button data-tab="trend">Trend Analysis</button>
+  <button data-tab="admin">🔒 Edit Form</button>
+ </div>
 
-<main>
-
-<!-- ================= TRAP COUNT ENTRY ================= -->
-<section id="tab-grid" class="entry-view">
-  <div class="card">
-    <h2 class="section-title">Weekly Trap Check</h2>
-    <div class="row">
-      <div class="field">
-        <label>Year</label>
-        <input type="number" id="gridYear" value="2026">
-      </div>
-      <div class="field">
-        <label>Month</label>
-        <select id="gridMonth"></select>
-      </div>
-      <div class="field">
-        <label>Week</label>
-        <select id="gridWeek">
-          <option value="1">Week 1</option>
-          <option value="2">Week 2</option>
-          <option value="3">Week 3</option>
-          <option value="4">Week 4</option>
-          <option value="5">Week 5</option>
-        </select>
-      </div>
-    </div>
-    <div class="note">Enter the count found for each category at every location for the selected week. Leave 0 if none found.</div>
-    <div id="locationCards"></div>
-    <div class="btn-row">
-      <button class="btn" onclick="saveGrid()">Save Week</button>
-      <button class="btn secondary" onclick="loadGrid()">Reload</button>
-    </div>
-    <div id="gridStatus" class="status ok"></div>
+ <!-- FILL -->
+ <div id="v-fill">
+  <div class="small" id="sync" style="margin:0 2px 8px"></div>
+  <div class="card"><div class="row">
+   <label class="f" style="width:100px">Year<input id="yr1" inputmode="numeric" maxlength="4"></label>
+   <label class="f" style="flex:1;min-width:150px">Month<select id="mon"></select></label>
   </div>
-</section>
-
-<!-- ================= UV LIGHT ENTRY ================= -->
-<section id="tab-uv" class="entry-view" style="display:none;">
-  <div class="card">
-    <h2 class="section-title">UV Light Condition (Monthly)</h2>
-    <div class="row">
-      <div class="field">
-        <label>Year</label>
-        <input type="number" id="uvYear" value="2026">
-      </div>
-      <div class="field">
-        <label>Month</label>
-        <select id="uvMonth"></select>
-      </div>
-    </div>
-    <div class="note">Tick a trap number if its lamp is <strong>NOT OK</strong> (broken / blinking).</div>
-
-    <label>Lamp 1 — GFT No.</label>
-    <div class="checkbox-grid" id="lamp1Grid"></div>
-
-    <label>Lamp 2 — GFT No.</label>
-    <div class="checkbox-grid" id="lamp2Grid"></div>
-
-    <label>Action Taken</label>
-    <div class="action-item"><input type="checkbox" id="actGlue"><span>Change glue board</span></div>
-    <div class="action-item"><input type="checkbox" id="actLamp1"><span>Change Lamp 1</span></div>
-    <div class="action-item"><input type="checkbox" id="actLamp2"><span>Change Lamp 2</span></div>
-    <div class="field"><label>Others</label><input type="text" id="actOthers" placeholder="Specify other action taken"></div>
-
-    <div class="row" style="margin-top:10px;">
-      <div class="field"><label>Checked By</label><input type="text" id="uvChecked"></div>
-      <div class="field"><label>Verified By</label><input type="text" id="uvVerified"></div>
-    </div>
-
-    <div class="btn-row">
-      <button class="btn" onclick="saveUV()">Save Month</button>
-      <button class="btn secondary" onclick="loadUV()">Reload</button>
-    </div>
-    <div id="uvStatus" class="status ok"></div>
+  <div style="margin-top:12px"><div class="small" style="margin-bottom:6px">Column (each month has 2 columns on the form)</div>
+   <div class="seg" id="slot"></div></div>
+  <div style="margin-top:12px"><div class="small" style="margin-bottom:6px">Week</div>
+   <div class="seg" id="week"></div></div>
   </div>
-</section>
+  <div id="fillbody"></div>
+ </div>
 
-<!-- ================= PEST REFERENCE ================= -->
-<section id="tab-reference" style="display:none;">
-  <div class="card">
-    <h2 class="section-title">Pest Category Reference</h2>
-    <div class="note">Quick visual guide to help identify what's caught in the trap. Matches the categories on the record: Flies, Weevils, Bugs, and Others.</div>
-    <div class="ref-grid" id="refGrid"></div>
-  </div>
-</section>
+ <!-- PRINT -->
+ <div id="v-print" class="hide">
+  <div class="card noprint"><div class="row">
+   <label class="f" style="width:100px">Year<input id="yr2" inputmode="numeric" maxlength="4"></label>
+   <button class="sec" id="btnPrint">Print (A4 landscape, 4 pages)</button>
+  </div><div class="small" style="margin-top:8px">Print output follows the original paper form.</div></div>
+  <div class="wrap" id="sheets"></div>
+ </div>
 
-<!-- ================= PRINT / REPORT ================= -->
-<section id="tab-print">
-  <div class="card no-print">
-    <h2 class="section-title">Generate Printable Record</h2>
-    <div class="print-controls">
-      <div class="field">
-        <label>Year</label>
-        <input type="number" id="printYear" value="2026">
-      </div>
-      <button class="btn" onclick="renderPrint()">Generate</button>
-      <button class="btn accent" onclick="window.print()">Print</button>
-    </div>
-    <div class="note">The pages below are laid out to match the original HX3-F29 paper form (Jan–Jun, Jul–Dec, UV Light sections).</div>
-  </div>
+ <!-- TREND -->
+ <div id="v-trend" class="hide">
+  <div class="card"><div class="row">
+   <label class="f" style="width:100px">Year<input id="yr3" inputmode="numeric" maxlength="4"></label>
+   <label class="f" style="flex:1;min-width:130px">Pest type<select id="tt"><option value="all">All types</option></select></label>
+   <label class="f" style="flex:1;min-width:130px">Location<select id="tl"><option value="all">All locations</option></select></label>
+  </div></div>
+  <div id="trendbody"></div>
+ </div>
 
-  <div id="printArea"></div>
-</section>
+ <!-- ADMIN -->
+ <div id="v-admin" class="hide adm"><div id="adminbody"></div></div>
 
-</main>
+ <!-- SHEET -->
+ <div id="v-sheet" class="hide">
+  <div class="card" id="sheetcard"></div>
+ </div>
+</div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-/* ============================================================
-   SHARED DATABASE SETUP (do this ONCE before deploying)
-   So that the checker and verifier can each open this form on
-   their own phone and see the same data, pick ONE shared backend:
+// ===== CONFIG =====
+const SCRIPT_URL = ""; // URL Google Apps Script Web App (Code.gs)
+const SHEET_URL  = ""; // URL Google Sheet (untuk tab Google Sheet)
+// ==================
+const MONTHS=["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
+const DEF={company:'HEXA FOOD SDN BHD (HEXA 3)',title:'FLY TRAP INSPECTION RECORD',docNo:'HX3-F29',issueNo:'3',issueDate:'01/01/2026',pages:'9',uvCount:8,
+ noteA:'Note for UV Light : Lamp must be functioning well (no broken, not blinking)',noteB:'Noted : Lamp must be functioning well (no broken, not blinking)',
+ types:{Flies:'Flies',Weevils:'Weevils',Bugs:'Bugs',Others:'Others'},nextLocId:9,
+ locs:[["1","Changing Room"],["2","Mixing room"],["3","Raw Material Storage"],["4","Allergen Production"],["5","Walkway F2"],["6","Glass Jar and 4in1 Production"],["7","Reception Area"],["8","Ziplock Production"]].map(([id,name])=>({id,label:id,name}))};
+const clone=o=>JSON.parse(JSON.stringify(o));
+const mergeCfg=c=>({...clone(DEF),...c,types:{...DEF.types,...((c&&c.types)||{})},locs:(c&&c.locs&&c.locs.length)?c.locs:clone(DEF.locs)});
+const canon=o=>JSON.stringify(o,(k,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.keys(v).sort().reduce((a,x)=>(a[x]=v[x],a),{}):v);
+let CFG=clone(DEF); try{const lc=localStorage.getItem('hx3f29cfg'); if(lc)CFG=mergeCfg(JSON.parse(lc))}catch(e){}
+const LOC=[]; // [id,name,label]
+function syncLOC(){LOC.length=0;CFG.locs.forEach(l=>LOC.push([l.id,l.name,l.label||l.id]))}
+syncLOC();
+const TL=t=>CFG.types[t]||t;
+const UVN=()=>Array.from({length:CFG.uvCount},(_,i)=>i+1);
+const TYPES=["Flies","Weevils","Bugs","Others"];
+const $=s=>document.querySelector(s);
+let year=String(new Date().getFullYear()), S={}, fm=new Date().getMonth(), fs=0, conn='none';
 
-   OPTION A — Google Sheets (recommended: easy to view/edit data,
-   familiar spreadsheet format, fully free):
-   1. Create a new Google Sheet.
-   2. Extensions → Apps Script → delete any starter code → paste
-      the Apps Script code provided separately → Save.
-   3. Deploy → New deployment → type "Web app" → Execute as: Me →
-      Who has access: Anyone → Deploy → copy the URL (ends in /exec).
-   4. Paste that URL into SHEET_API_URL below.
+/* ---------- state + auto sync ---------- */
+const lk=()=>'hx3f29-'+year, dk=()=>'hx3f29d-'+year;
+let dirty={}, flushing=false, timer=null, lastSync='';
+function saveLocal(){S.year=year;try{localStorage.setItem(lk(),JSON.stringify(S));localStorage.setItem(dk(),JSON.stringify(dirty))}catch(e){}}
+function status(m){const e=$('#sync');if(e)e.textContent=m}
+function mark(k,v){
+ const del=(v===''||v==null||v===false);
+ if(del) delete S[k]; else S[k]=v;
+ dirty[k]=del?null:v; saveLocal(); sched();
+}
+const setKey=mark;
+function sched(){ if(!SCRIPT_URL)return; status('Saving…'); clearTimeout(timer); timer=setTimeout(flush,1200); }
+async function flush(){
+ if(!SCRIPT_URL||flushing)return;
+ const patch={...dirty}; if(!Object.keys(patch).length)return;
+ flushing=true;
+ try{
+  const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({year,patch})});
+  const j=await r.json(); if(!j.ok) throw new Error('fail');
+  Object.keys(patch).forEach(k=>{ if(JSON.stringify(dirty[k])===JSON.stringify(patch[k])) delete dirty[k]; });
+  conn='ok'; banner(); saveLocal();
+  if(j.data) mergeRemote(j.data);
+  status(Object.keys(dirty).length?'Saving…':'✓ Synced '+new Date().toLocaleTimeString());
+ }catch(e){ conn='err'; banner(); status('Offline — will retry automatically'); setTimeout(flush,10000); }
+ flushing=false;
+ if(Object.keys(dirty).length&&conn==='ok') sched();
+}
+function mergeRemote(remote){
+ Object.keys(remote).forEach(k=>{ if(!(k in dirty)) S[k]=remote[k]; });
+ Object.keys(S).forEach(k=>{ if(k!=='year'&&!(k in remote)&&!(k in dirty)) delete S[k]; });
+ S.year=year; saveLocal(); refreshUI();
+}
+function refreshUI(){
+ applyPrint();
+ if(!$('#v-trend').classList.contains('hide'))renderTrend();
+ const a=document.activeElement;
+ if(a&&a.tagName==='INPUT'&&$('#fillbody').contains(a)){
+  document.querySelectorAll('#fillbody [data-k]').forEach(e=>{
+   if(e===a)return; const v=S[e.dataset.k];
+   if(e.type==='checkbox')e.checked=!!v; else e.value=v||'';
+  });
+  document.querySelectorAll('#fillbody [data-uv]').forEach(e=>e.classList.toggle('on',!!S[e.dataset.uv]));
+  const [h,c]=hc();
+  document.querySelectorAll('#week [data-week]').forEach(e=>e.classList.toggle('on',!!S[`wk-${h}-${c}-${e.dataset.week}`]));
+ } else renderFill();
+}
+async function pull(){
+ if(!SCRIPT_URL||flushing||document.hidden)return;
+ try{
+  const r=await fetch(SCRIPT_URL+'?year='+encodeURIComponent(year));
+  const j=await r.json(); conn='ok'; banner();
+  if(j){ adm.hasPw=!!j.hasPassword; if(j.config) cfgFromServer(j.config); }
+  if(j&&j.data) mergeRemote(j.data);
+  if(!Object.keys(dirty).length) status('✓ Synced '+new Date().toLocaleTimeString());
+ }catch(e){conn='err';banner();status('Offline — will retry automatically')}
+}
+async function loadYear(){
+ try{S=JSON.parse(localStorage.getItem(lk())||'{}')}catch(e){S={}}
+ try{dirty=JSON.parse(localStorage.getItem(dk())||'{}')}catch(e){dirty={}}
+ conn=SCRIPT_URL?'wait':'none'; banner(); S.year=year; renderFill(); applyPrint();
+ if(SCRIPT_URL){ await pull(); if(Object.keys(dirty).length) flush(); }
+ else status('Saved on this device only');
+}
+async function saveRemote(){ if(!SCRIPT_URL){alert('Google Sheet is not connected yet. Saved on this device only.');return} await flush(); await pull(); }
+setInterval(pull,8000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
+function banner(){
+ const b=$('#banner');
+ const m={ok:['ok','Connected to Google Sheet. Records are saved online and shared with anyone using this same connection.'],
+  none:['warn','Google Sheet is not connected yet. Records are saved on this device only.'],
+  wait:['warn','Connecting to Google Sheet…'],
+  err:['err','Could not reach Google Sheet. Showing records saved on this device.']}[conn];
+ b.className='banner '+m[0]; b.textContent=m[1];
+}
 
-   OPTION B — Firebase Firestore:
-   1. https://console.firebase.google.com → Add project (free).
-   2. Firestore Database → Create database → Start in test mode.
-   3. Project settings → Your apps → Web ( </> ) → register → copy
-      the firebaseConfig object → paste into firebaseConfig below.
+/* ---------- fill tab ---------- */
+const hc=()=>{const h=fm<6?0:1;return [h,(fm%6)*2+fs]};
+function initFillControls(){
+ $('#mon').innerHTML=MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+ $('#mon').value=fm;
+ $('#mon').onchange=e=>{fm=+e.target.value;renderFill()};
+ $('#slot').innerHTML=[0,1].map(i=>`<button data-slot="${i}">Column ${i+1}</button>`).join('');
+ $('#slot').onclick=e=>{const b=e.target.closest('[data-slot]');if(b){fs=+b.dataset.slot;renderFill()}};
+ $('#week').onclick=e=>{
+  const b=e.target.closest('[data-week]');if(!b)return;
+  const [h,c]=hc();
+  const was=!!S[`wk-${h}-${c}-${b.dataset.week}`];
+  for(let n=1;n<=5;n++) if(S[`wk-${h}-${c}-${n}`]) mark(`wk-${h}-${c}-${n}`,'');
+  if(!was) mark(`wk-${h}-${c}-${b.dataset.week}`,1);
+  renderFill();
+ };
+}
+function renderFill(){
+ const [h,c]=hc();
+ $('#mon').value=fm;$('#yr1').value=year;
+ document.querySelectorAll('#slot button').forEach(b=>b.classList.toggle('on',+b.dataset.slot===fs));
+ $('#week').innerHTML=[1,2,3,4,5].map(n=>`<button data-week="${n}" class="${S[`wk-${h}-${c}-${n}`]?'on':''}">Week ${n}</button>`).join('');
+ const v=k=>(S[k]||'').toString().replace(/"/g,'&quot;');
+ let t=`<div class="card"><h3>Pest count per trap</h3><div class="small" style="margin-bottom:8px">Tap + / − to count. Press “Fill empty with 0” first, then only change the traps that caught pests.</div><button type="button" class="sec" data-zero="1" style="width:100%;margin-bottom:14px">Fill empty with 0</button>`;
+ LOC.forEach(([n,name,lb])=>{
+  t+=`<div style="margin-bottom:12px"><div style="font-weight:600;margin-bottom:6px">${lb} · ${name}</div><div class="grid4">`+
+   TYPES.map(ty=>{const k=`p-${h}-${n}-${ty}-${c}`;return `<div class="st"><span>${TL(ty)}</span><div><button type="button" data-step="-1" data-sk="${k}">−</button><input data-k="${k}" value="${v(k)}" inputmode="numeric" placeholder="–"><button type="button" data-step="1" data-sk="${k}">+</button></div></div>`}).join('')+`</div></div>`;
+ });
+ t+=`</div><div class="card"><h3>UV Light condition</h3><div class="small" style="margin-bottom:8px">Tap the GFT No. if the lamp is NOT OK (marked X).</div>`;
+ [1,2].forEach(L=>{
+  t+=`<div style="font-weight:600;margin:8px 0 6px">Lamp ${L}</div><div class="grid8">`+
+   UVN().map(n=>{const k=`uv${L}-${h}-${c}-${n}`;return `<button class="pill x ${S[k]?'on':''}" data-uv="${k}">${n}</button>`}).join('')+`</div>`;
+ });
+ t+=`<div class="small" style="margin-top:10px">Lamp must be functioning well (no broken, not blinking).</div></div>`;
+ const a=`ac-${h}-${c}`;
+ t+=`<div class="card"><h3>Action taken</h3>`+
+  [['gb','Change glue board'],['l1','Change Lamp 1'],['l2','Change Lamp 2'],['ot','Others']].map(([s,l])=>`<label class="chk"><input type="checkbox" data-k="${a}-${s}" ${S[`${a}-${s}`]?'checked':''}>${l}</label>`).join('')+
+  `<input data-k="${a}-tx" placeholder="Others: …" value="${v(a+'-tx')}" style="margin-top:6px"></div>`+
+  `<div class="card"><div class="row"><label class="f" style="flex:1;min-width:140px">Checked by<input data-k="cb-${h}-${c}" value="${v(`cb-${h}-${c}`)}"></label>
+   <label class="f" style="flex:1;min-width:140px">Verified by<input data-k="vb-${h}-${c}" value="${v(`vb-${h}-${c}`)}"></label></div></div>`+
+  `<button class="sec" id="btnSave" style="width:100%">Sync now</button><div class="small" style="margin:8px 2px 14px">Changes are saved automatically and shared with all devices.</div><button class="sec danger" id="btnClear" style="width:100%;margin-bottom:24px">Clear this column</button>`;
+ $('#fillbody').innerHTML=t;
+ $('#btnSave').onclick=saveRemote;
+ $('#btnClear').onclick=()=>{
+  const [h,c]=hc();
+  if(!confirm(`Clear ALL entries for ${MONTHS[fm]}, Column ${fs+1} (${year})? This cannot be undone.`))return;
+  const re=new RegExp(`^(wk-${h}-${c}-\\d|p-${h}-\\d+-[A-Za-z]+-${c}|uv[12]-${h}-${c}-\\d|ac-${h}-${c}-\\w+|[cv]b-${h}-${c})$`);
+  Object.keys(S).filter(k=>re.test(k)).forEach(k=>mark(k,''));
+  renderFill();
+ };
+}
+$('#fillbody').addEventListener('input',e=>{const k=e.target.dataset.k;if(k&&e.target.type!=='checkbox')setKey(k,e.target.value.trim()===''?'':e.target.value)});
+$('#fillbody').addEventListener('change',e=>{const k=e.target.dataset.k;if(k&&e.target.type==='checkbox')setKey(k,e.target.checked?1:'')});
+$('#fillbody').addEventListener('click',e=>{
+ const z=e.target.closest('[data-zero]');
+ if(z){const [h,c]=hc();LOC.forEach(([n])=>TYPES.forEach(ty=>{const k=`p-${h}-${n}-${ty}-${c}`;if(S[k]==null||S[k]==='')mark(k,'0')}));renderFill();return}
+ const st=e.target.closest('[data-step]');
+ if(st){const k=st.dataset.sk,cur=parseInt(S[k])||0,nv=Math.max(0,cur+(+st.dataset.step));mark(k,String(nv));const inp=st.parentNode.querySelector('input');inp.value=nv;return}
+ const b=e.target.closest('[data-uv]');if(!b)return;
+ const k=b.dataset.uv; mark(k,S[k]?'':1); b.classList.toggle('on',!!S[k]);
+});
+function setYear(y){
+ y=(y||'').replace(/\D/g,'').slice(0,4); if(y.length!==4||y===year){return}
+ year=y; loadYear();
+}
+['#yr1','#yr2','#yr3'].forEach(s=>$(s).addEventListener('input',e=>{$('#yr1').value=$('#yr2').value=$('#yr3').value=e.target.value;setYear(e.target.value)}));
 
-   If SHEET_API_URL is filled in, it's used. Otherwise, if
-   firebaseConfig is filled in, Firestore is used. If neither is
-   set, the form still works but SAVES ONLY ON THIS DEVICE.
-   ============================================================ */
-const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwnMVB3aUwkbzfKqNsNGs_ziiiWBNf4aBoBOc5NPXL-LjRpe7eKZRC7daQAOHpD2Gam/exec";
+/* ---------- printable form ---------- */
+function head(p,withYear){
+ return `<table class="hd"><colgroup><col style="width:79%"><col style="width:6.5%"><col style="width:14.5%"></colgroup>
+ <tr><td rowspan="2" class="co">${CFG.company}</td><td>Doc No</td><td>${CFG.docNo}</td></tr>
+ <tr><td>Issue No:</td><td>${CFG.issueNo}</td></tr>
+ <tr><td rowspan="2" class="co">${CFG.title}</td><td>Issue Date:</td><td>${CFG.issueDate}</td></tr>
+ <tr><td>Page:</td><td>${p} of ${CFG.pages}</td></tr></table>${withYear?'<div class="yrline">Year: <input data-k="year" readonly></div>':''}`;
+}
+const cols='<colgroup><col style="width:9%"><col style="width:9%"><col style="width:6%">'+'<col style="width:6.3333%">'.repeat(12)+'</colgroup>';
+const weekCells=h=>Array.from({length:12},(_,c)=>`<td><div class="wk">`+[1,2,3,4,5].map(n=>`<span class="pk w" data-k="wk-${h}-${c}-${n}">${n}</span>`).join('<span>/</span>')+`</div></td>`).join('');
+function page1(h,p){
+ let t=`<table>${cols}<tr><td class="b" rowspan="2">GFT No</td><td class="b" rowspan="2">CATEGORY</td><td class="b">MONTH</td>`+
+  MONTHS.slice(h*6,h*6+6).map(m=>`<td colspan="2" class="b">${m}</td>`).join('')+`</tr><tr><td class="b">WEEK</td>${weekCells(h)}</tr>`;
+ LOC.forEach(([n,name,lb])=>TYPES.forEach((ty,i)=>{
+  t+='<tr>'+(i==0?`<td rowspan="4" class="gft">${lb}<br>(${name})</td>`:'')+`<td class="cat">${TL(ty)}</td><td class="c"></td>`;
+  for(let c=0;c<12;c++) t+=`<td class="c"><input data-k="p-${h}-${n}-${ty}-${c}" readonly></td>`;
+  t+='</tr>';
+ }));
+ return `<section class="sheet">${head(p,h==0)}${t}</table></section>`;
+}
+function page2(h,p){
+ let t=`<table>${cols}<tr><td class="b" colspan="3">MONTH</td>`+
+  MONTHS.slice(h*6,h*6+6).map(m=>`<td colspan="2" class="b">${m}</td>`).join('')+`</tr><tr><td class="b" colspan="3">WEEK</td>${weekCells(h)}</tr>`;
+ [1,2].forEach(L=>{
+  t+=`<tr><td class="b" colspan="3" style="font-size:8px">${L==1?'UV Light Condition<br>':''}Lamp ${L}<br>(X if not OK)</td>`;
+  for(let c=0;c<12;c++) t+=`<td><div class="uv">`+UVN().map(n=>`<span class="pk u" data-k="uv${L}-${h}-${c}-${n}">${n}</span>`).join('<span>/</span>')+`</div></td>`;
+  t+='</tr>';
+ });
+ t+='<tr><td class="b" colspan="3">Action Taken</td>';
+ for(let c=0;c<12;c++){const k=`ac-${h}-${c}`;
+  t+=`<td class="act"><label><input type="checkbox" data-k="${k}-gb">Change glue board</label><label><input type="checkbox" data-k="${k}-l1">Change Lamp 1</label><label><input type="checkbox" data-k="${k}-l2">Change Lamp 2</label><label><input type="checkbox" data-k="${k}-ot">Others:</label><input type="text" data-k="${k}-tx" readonly></td>`}
+ t+='</tr>';
+ [['Checked by','cb'],['Verified by','vb']].forEach(([r,x])=>{
+  t+=`<tr><td class="b" colspan="3">${r}</td>`;
+  for(let c=0;c<12;c++) t+=`<td class="sign"><input data-k="${x}-${h}-${c}" readonly></td>`;
+  t+='</tr>';
+ });
+ return `<section class="sheet">${head(p,false)}${t}</table><div class="note">${h==0?CFG.noteA:CFG.noteB}</div></section>`;
+}
+function buildSheets(){
+ const n=Math.max(1,LOC.length), rh=Math.min(4.5,150/(4*n));
+ $('#sheets').style.setProperty('--rh',rh.toFixed(2)+'mm');
+ $('#sheets').innerHTML=page1(0,1)+page2(0,2)+page1(1,3)+page2(1,4);
+ applyPrint();
+}
+function applyPrint(){
+ document.querySelectorAll('#sheets [data-k]').forEach(e=>{
+  const k=e.dataset.k,v=S[k];
+  if(e.classList.contains('pk')) e.classList.toggle('on',!!v);
+  else if(e.type==='checkbox') e.checked=!!v;
+  else e.value=k==='year'?year:(v||'');
+ });
+ $('#yr2').value=year;
+}
+$('#btnPrint').onclick=()=>{applyPrint();window.print()};
 
-const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_YOUR_SENDER_ID",
-  appId: "PASTE_YOUR_APP_ID"
+
+/* ---------- trend analysis ---------- */
+const MON3=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+const TCOL={Flies:'#1b5e3a',Weevils:'#e08a00',Bugs:'#8e44ad',Others:'#607d8b'};
+function fillTrendSelects(){
+ const a=$('#tt').value,b=$('#tl').value;
+ $('#tt').innerHTML='<option value="all">All types</option>'+TYPES.map(t=>`<option value="${t}">${TL(t)}</option>`).join('');
+ $('#tl').innerHTML='<option value="all">All locations</option>'+LOC.map(([n,nm,lb])=>`<option value="${n}">${lb} · ${nm}</option>`).join('');
+ if([...$('#tt').options].some(o=>o.value===a))$('#tt').value=a;
+ if([...$('#tl').options].some(o=>o.value===b))$('#tl').value=b;
+}
+$('#tt').onchange=$('#tl').onchange=renderTrend;
+const num=v=>{const x=parseFloat(v);return isFinite(x)&&x>0?x:0};
+function renderTrend(){
+ $('#yr3').value=year;
+ const tt=$('#tt').value, tl=$('#tl').value;
+ const types=tt==='all'?TYPES:[tt], locs=tl==='all'?LOC:LOC.filter(l=>l[0]===tl);
+ // periods 0..23 : h*12+c ; month = h*6+floor(c/2)
+ const P=[];
+ for(let h=0;h<2;h++)for(let c=0;c<12;c++){
+  const o={h,c,month:h*6+Math.floor(c/2),slot:c%2,by:{},tot:0,rec:false};
+  TYPES.forEach(t=>o.by[t]=0);
+  locs.forEach(([n])=>types.forEach(t=>{const v=num(S[`p-${h}-${n}-${t}-${c}`]);o.by[t]+=v;o.tot+=v}));
+  for(let w=1;w<=5;w++) if(S[`wk-${h}-${c}-${w}`]) o.rec=true;
+  LOC.forEach(([n])=>TYPES.forEach(t=>{if(S[`p-${h}-${n}-${t}-${c}`]!=null&&S[`p-${h}-${n}-${t}-${c}`]!=='')o.rec=true}));
+  P.push(o);
+ }
+ const rec=P.filter(p=>p.rec), total=P.reduce((a,p)=>a+p.tot,0);
+ if(!rec.length){ $('#trendbody').innerHTML=`<div class="card">No records for ${year} yet. Fill in the checklist and trends will appear here.</div>`; return; }
+ const peak=rec.reduce((a,p)=>p.tot>a.tot?p:a,rec[0]);
+ const lt={}; LOC.forEach(([n])=>lt[n]=0);
+ P.forEach(p=>locs.forEach(([n])=>types.forEach(t=>lt[n]+=num(S[`p-${p.h}-${n}-${t}-${p.c}`]))));
+ const topLoc=locs.reduce((a,l)=>lt[l[0]]>lt[a[0]]?l:a,locs[0]);
+ const last=rec[rec.length-1], prev=rec[rec.length-2];
+ let chg='—',cls='';
+ if(prev){ if(prev.tot===0) chg=last.tot===0?'0%':'New'; else{const d=Math.round((last.tot-prev.tot)/prev.tot*100);chg=(d>0?'+':'')+d+'%';cls=d>0?'up':d<0?'down':''} }
+ const lab=p=>`${MON3[p.month]} · Col ${p.slot+1}`;
+ // UV + actions
+ const uv={1:{},2:{}};let gb=0,l1=0,l2=0;
+ [1,2].forEach(L=>UVN().forEach(n=>uv[L][n]=0));
+ P.forEach(p=>{
+  [1,2].forEach(L=>{for(let n=1;n<=CFG.uvCount;n++) if(S[`uv${L}-${p.h}-${p.c}-${n}`]) uv[L][n]++});
+  const k=`ac-${p.h}-${p.c}`; if(S[k+'-gb'])gb++; if(S[k+'-l1'])l1++; if(S[k+'-l2'])l2++;});
+ // stacked bar chart
+ const W=720,H=250,ml=34,mb=34,mt=12,mr=8,bw=(W-ml-mr)/24;
+ let max=Math.max(1,...P.map(p=>p.tot)); const step=Math.pow(10,Math.floor(Math.log10(max))); max=Math.ceil(max/step)*step;
+ const y=v=>mt+(H-mt-mb)*(1-v/max);
+ let svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block">`;
+ for(let i=0;i<=4;i++){const v=max*i/4;svg+=`<line x1="${ml}" x2="${W-mr}" y1="${y(v)}" y2="${y(v)}" stroke="#e3e6e1"/><text x="${ml-4}" y="${y(v)+3}" font-size="9" text-anchor="end" fill="#6b736d">${Math.round(v*10)/10}</text>`}
+ P.forEach((p,i)=>{
+  const x=ml+i*bw+1.5; let acc=0;
+  types.forEach(t=>{const v=p.by[t];if(!v)return;svg+=`<rect x="${x}" y="${y(acc+v)}" width="${bw-3}" height="${y(acc)-y(acc+v)}" fill="${TCOL[t]}"><title>${lab(p)} · ${TL(t)}: ${v}</title></rect>`;acc+=v});
+  if(p.tot) svg+=`<text x="${x+(bw-3)/2}" y="${y(p.tot)-3}" font-size="8" text-anchor="middle" fill="#1f2a24">${p.tot}</text>`;
+  if(!p.rec) svg+=`<text x="${x+(bw-3)/2}" y="${y(0)-3}" font-size="7" text-anchor="middle" fill="#b0b5ae">–</text>`;
+  if(p.slot===0) svg+=`<text x="${x+bw-1.5}" y="${H-mb+13}" font-size="9" text-anchor="middle" fill="#1f2a24">${MON3[p.month]}</text>`;
+ });
+ svg+=`<line x1="${ml}" x2="${W-mr}" y1="${y(0)}" y2="${y(0)}" stroke="#1f2a24"/></svg>`;
+ const legend=`<div class="legend">`+types.map(t=>`<span><i style="background:${TCOL[t]}"></i>${TL(t)}</span>`).join('')+`</div>`;
+ // heatmap location x month
+ const hm={}; LOC.forEach(([n])=>hm[n]=Array(12).fill(0));
+ P.forEach(p=>locs.forEach(([n])=>types.forEach(t=>hm[n][p.month]+=num(S[`p-${p.h}-${n}-${t}-${p.c}`]))));
+ let hmax=1; locs.forEach(([n])=>hm[n].forEach(v=>hmax=Math.max(hmax,v)));
+ const shade=v=>v?`background:rgba(198,40,40,${(0.12+0.6*v/hmax).toFixed(2)})`:'';
+ let ht=`<table class="hm"><tr><th>Location</th>${MON3.map(m=>`<th>${m}</th>`).join('')}<th>Total</th></tr>`;
+ locs.forEach(([n,nm,lb])=>{ht+=`<tr><td class="l">${lb} · ${nm}</td>`+hm[n].map(v=>`<td style="${shade(v)}">${v||''}</td>`).join('')+`<td><b>${lt[n]}</b></td></tr>`});
+ ht+=`</table>`;
+ // uv table
+ let ut=`<table class="hm" style="min-width:380px"><tr><th>Lamp (times X)</th>${UVN().map(n=>`<th>${n}</th>`).join('')}</tr>`;
+ [1,2].forEach(L=>{ut+=`<tr><td class="l">Lamp ${L}</td>`+UVN().map(n=>`<td style="${uv[L][n]?`background:rgba(198,40,40,${Math.min(.75,.2+uv[L][n]*.15)})`:''}">${uv[L][n]||''}</td>`).join('')+`</tr>`});
+ ut+=`</table>`;
+ $('#trendbody').innerHTML=`
+ <div class="kpis">
+  <div class="kpi"><span>Total pests (${year})</span><b>${total}</b><span>${rec.length} periods recorded</span></div>
+  <div class="kpi"><span>Latest vs previous</span><b class="${cls}">${chg}</b><span>${prev?lab(prev)+' → '+lab(last):lab(last)}</span></div>
+  <div class="kpi"><span>Peak period</span><b>${lab(peak)}</b><span>${peak.tot} pests</span></div>
+  <div class="kpi"><span>Highest location</span><b>${lt[topLoc[0]]?topLoc[2]+' · '+topLoc[1]:'—'}</b><span>${lt[topLoc[0]]} pests</span></div>
+ </div>
+ <div class="card"><h3>Pest count per inspection</h3>${legend}${svg}<div class="small">Each month has 2 columns (Col 1, Col 2). “–” = not recorded.</div></div>
+ <div class="card"><h3>Location × month</h3><div class="tw">${ht}</div></div>
+ <div class="card"><h3>UV lamp failures (by trap)</h3><div class="tw">${ut}</div></div>
+ <div class="kpis">
+  <div class="kpi"><span>Glue board changed</span><b>${gb}</b><span>times</span></div>
+  <div class="kpi"><span>Lamp 1 changed</span><b>${l1}</b><span>times</span></div>
+  <div class="kpi"><span>Lamp 2 changed</span><b>${l2}</b><span>times</span></div>
+ </div>`;
+}
+
+/* ---------- sheet tab ---------- */
+$('#sheetcard').innerHTML=SHEET_URL
+ ?`<div style="margin-bottom:10px"><a class="sec" href="${SHEET_URL}" target="_blank" rel="noopener">Open Google Sheet</a></div><iframe src="${SHEET_URL}"></iframe>`
+ :`<b>Google Sheet</b><p class="small">Set <code>SHEET_URL</code> at the top of the script to show the Google Sheet here. Each year has its own tab (e.g. "2026") laid out like the paper form.</p>`;
+
+/* ---------- tabs ---------- */
+document.querySelector('.tabs').onclick=e=>{
+ const b=e.target.closest('[data-tab]');if(!b)return;
+ document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+ ['fill','print','sheet','trend','admin'].forEach(t=>$('#v-'+t).classList.toggle('hide',t!==b.dataset.tab));
+ if(b.dataset.tab==='print')applyPrint();
+ if(b.dataset.tab==='trend')renderTrend();
+ if(b.dataset.tab==='admin')renderAdmin();
 };
 
-const sheetReady = !!(SHEET_API_URL && SHEET_API_URL.indexOf("PASTE_") !== 0);
-let db = null;
-let firebaseReady = false;
-if(!sheetReady){
-  try{
-    if(firebaseConfig.apiKey && firebaseConfig.apiKey.indexOf("PASTE_") !== 0){
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      firebaseReady = true;
-    }
-  }catch(e){ console.error("Firebase init failed:", e); }
-}
 
-const banner = document.getElementById("syncBanner");
-if(sheetReady){
-  banner.style.display = "block";
-  banner.style.background = "#e4f5ea"; banner.style.color = "#1a5c3a"; banner.style.borderBottom = "1px solid #bfe3cd";
-  banner.textContent = "✓ Connected to Google Sheets — entries sync across every device that opens this form.";
-  setTimeout(()=>{ banner.style.display = "none"; }, 4000);
-}else if(firebaseReady){
-  banner.style.display = "block";
-  banner.style.background = "#e4f5ea"; banner.style.color = "#1a5c3a"; banner.style.borderBottom = "1px solid #bfe3cd";
-  banner.textContent = "✓ Connected to Firebase — entries sync across every device that opens this form.";
-  setTimeout(()=>{ banner.style.display = "none"; }, 4000);
-}else{
-  banner.style.display = "block";
-  banner.textContent = "⚠ Not connected to a shared database yet — entries will only be saved on this device. See the setup note at the top of the code file.";
+/* ---------- config apply + admin (Edit Form) ---------- */
+function applyChrome(){
+ document.title=CFG.docNo+' '+CFG.title;
+ $('#appCo').textContent=CFG.company;
+ $('#appTitle').textContent=CFG.title.toLowerCase()+' — Digital';
+ $('#appDoc').textContent=CFG.docNo;$('#appIssue').textContent=CFG.issueNo;$('#appDate').textContent=CFG.issueDate;
 }
+function applyCfg(c){
+ CFG=mergeCfg(c); syncLOC();
+ try{localStorage.setItem('hx3f29cfg',JSON.stringify(CFG))}catch(e){}
+ applyChrome(); buildSheets(); fillTrendSelects();
+ if(!(document.activeElement&&$('#fillbody').contains(document.activeElement))) renderFill();
+ if(!$('#v-trend').classList.contains('hide')) renderTrend();
+}
+function cfgFromServer(c){ const m=mergeCfg(c); if(canon(m)!==canon(CFG)) applyCfg(m); }
 
-const LOCATIONS = [
-  "1 (Changing Room)",
-  "2 (Mixing room)",
-  "3 (Raw Material Storage)",
-  "4 (Allergen Production)",
-  "5 (Walkway F2)",
-  "6 (Glass Jar and 4in1 Production)",
-  "7 (Reception Area)",
-  "8 (Ziplock Production)"
-];
-const CATEGORIES = ["Flies","Weevils","Bugs","Others"];
-const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const LOCAL_KEY = "hx3f29_flytrap_data_v2";
-
-// ---------- Local fallback storage (used only if no shared backend is configured) ----------
-function loadLocal(){
-  try{ return JSON.parse(localStorage.getItem(LOCAL_KEY) || "{}"); }catch(e){ return {}; }
+let adm={unlocked:false,pw:null,hasPw:null,draft:null,msg:'',bad:false};
+const esc=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+async function api(body){const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)});return r.json()}
+function say(m,bad){adm.msg=m;adm.bad=!!bad}
+async function renderAdmin(){
+ const el=$('#adminbody');
+ if(!SCRIPT_URL){el.innerHTML='<div class="card">Edit Form needs the Google Sheet connection (set <code>SCRIPT_URL</code>) so the password can be checked on the server.</div>';return}
+ if(adm.hasPw===null){
+  el.innerHTML='<div class="card">Loading…</div>';
+  try{const r=await fetch(SCRIPT_URL+'?year='+encodeURIComponent(year));const j=await r.json();adm.hasPw=!!j.hasPassword;if(j.config)cfgFromServer(j.config)}
+  catch(e){el.innerHTML='<div class="card">Cannot reach Google Sheet. Try again later.</div>';return}
+ }
+ const msg=adm.msg?`<div class="msg ${adm.bad?'bad':''}">${esc(adm.msg)}</div>`:'';
+ if(!adm.unlocked){
+  el.innerHTML=adm.hasPw
+   ?`<div class="card">${msg}<h3>Edit Form — admin only</h3><label class="f">Password<input type="password" id="admPw" autocomplete="current-password"></label><button class="primary" data-adm="unlock" style="margin-top:12px">Unlock</button></div>`
+   :`<div class="card">${msg}<h3>Create admin password</h3><div class="small" style="margin-bottom:8px">No password set yet. Create one now (min 4 characters). Only people with this password can edit the form.</div>
+     <label class="f">New password<input type="password" id="admNew" autocomplete="new-password"></label>
+     <label class="f" style="margin-top:8px">Confirm password<input type="password" id="admNew2" autocomplete="new-password"></label>
+     <button class="primary" data-adm="create" style="margin-top:12px">Create password and unlock</button></div>`;
+  return;
+ }
+ const d=adm.draft;
+ const F=(f,l,w)=>`<label class="f" style="${w||''}">${l}<input data-f="${f}" value="${esc(d[f])}"></label>`;
+ el.innerHTML=`${msg}
+ <div class="card"><h3 style="margin-top:0">Header</h3>
+  <div class="g2">${F('company','Company name','grid-column:1/-1')}${F('title','Form title','grid-column:1/-1')}${F('docNo','Doc No')}${F('issueNo','Issue No')}${F('issueDate','Issue Date')}${F('pages','Total pages (Page x of …)')}</div></div>
+ <div class="card"><h3 style="margin-top:0">Locations (GFT)</h3><div class="small" style="margin-bottom:8px">No. is the number printed on the form. Removing a location hides it; its old data stays in the sheet. ${d.locs.length>8?'More than 8 locations makes rows smaller so it still fits one page.':''}</div>
+  ${d.locs.map((l,i)=>`<div class="rowl"><input data-li="${i}" data-lf="label" value="${esc(l.label)}" placeholder="No."><input data-li="${i}" data-lf="name" value="${esc(l.name)}" placeholder="Location name"><button data-adm="delloc" data-i="${i}" title="Remove">✕</button></div>`).join('')}
+  <button class="sec" data-adm="addloc" style="width:100%;margin-top:6px">+ Add location</button></div>
+ <div class="card"><h3 style="margin-top:0">Pest categories</h3><div class="g2">${TYPES.map(t=>`<label class="f">${t}<input data-tf="${t}" value="${esc(d.types[t])}"></label>`).join('')}</div></div>
+ <div class="card"><h3 style="margin-top:0">UV lamps and notes</h3>
+  <div class="g2"><label class="f">Number of UV lamps per row (1–16)<input data-f="uvCount" inputmode="numeric" value="${esc(d.uvCount)}"></label></div>
+  <label class="f" style="margin-top:8px">Note under UV table (Jan–Jun, page 2)<input data-f="noteA" value="${esc(d.noteA)}"></label>
+  <label class="f" style="margin-top:8px">Note under UV table (Jul–Dec, page 4)<input data-f="noteB" value="${esc(d.noteB)}"></label></div>
+ <button class="primary" data-adm="save">Save changes</button>
+ <div class="small" style="margin:8px 2px 16px">Changes apply to every device and to the Google Sheet tab. Past records are kept.</div>
+ <div class="card"><h3 style="margin-top:0">Change password</h3><div class="g2"><label class="f">New password<input type="password" id="chNew" autocomplete="new-password"></label><label class="f">Confirm<input type="password" id="chNew2" autocomplete="new-password"></label></div>
+  <button class="sec" data-adm="chpw" style="margin-top:10px">Change password</button></div>
+ <button class="sec" data-adm="lock" style="width:100%;margin-bottom:24px">Lock</button>`;
 }
-function saveLocal(store){
-  try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(store)); }catch(e){ console.error("storage error",e); }
-}
-
-// ---------- Google Sheets (Apps Script) helpers ----------
-// Layout: one tab per YEAR (e.g. "2026"), holding both grid + uv rows,
-// distinguished by a "type" column (grid/uv) and a "month" column (0-11).
-async function sheetGet(year, type, month){
-  const url = `${SHEET_API_URL}?year=${encodeURIComponent(year)}&type=${type}&month=${month}`;
-  const res = await fetch(url);
-  const json = await res.json();
-  return json.found ? json.data : null;
-}
-async function sheetSet(year, type, month, data){
-  // text/plain avoids a CORS preflight, which Apps Script web apps don't support
-  await fetch(SHEET_API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({ year, type, month, data })
-  });
-}
-
-// ---------- Default shapes ----------
-function defaultGridMonth(){
-  const g = {};
-  for(let li=0; li<LOCATIONS.length; li++){
-    g[li] = {};
-    for(let ci=0; ci<CATEGORIES.length; ci++) g[li][ci] = {1:"",2:"",3:"",4:"",5:""};
-  }
-  return g;
-}
-function defaultUvMonth(){
-  return { lamp1:new Array(8).fill(false), lamp2:new Array(8).fill(false),
-    action:{glue:false,lamp1:false,lamp2:false,othersText:""}, checkedBy:"", verifiedBy:"" };
-}
-
-// ---------- Unified data layer: Google Sheets > Firestore > localStorage ----------
-async function getGridDoc(year, month){
-  const key = `${year}_${month}`;
-  if(sheetReady){
-    const data = await sheetGet(year, "grid", month);
-    return data || defaultGridMonth();
-  }
-  if(firebaseReady){
-    const snap = await db.collection("flytrap_grid").doc(key).get();
-    return snap.exists ? snap.data() : defaultGridMonth();
-  }
-  const store = loadLocal();
-  return (store.grid && store.grid[key]) || defaultGridMonth();
-}
-async function setGridDoc(year, month, data){
-  const key = `${year}_${month}`;
-  if(sheetReady){ await sheetSet(year, "grid", month, data); return; }
-  if(firebaseReady){ await db.collection("flytrap_grid").doc(key).set(data); return; }
-  const store = loadLocal();
-  store.grid = store.grid || {};
-  store.grid[key] = data;
-  saveLocal(store);
-}
-async function getUvDoc(year, month){
-  const key = `${year}_${month}`;
-  if(sheetReady){
-    const data = await sheetGet(year, "uv", month);
-    return data || defaultUvMonth();
-  }
-  if(firebaseReady){
-    const snap = await db.collection("flytrap_uv").doc(key).get();
-    return snap.exists ? snap.data() : defaultUvMonth();
-  }
-  const store = loadLocal();
-  return (store.uv && store.uv[key]) || defaultUvMonth();
-}
-async function setUvDoc(year, month, data){
-  const key = `${year}_${month}`;
-  if(sheetReady){ await sheetSet(year, "uv", month, data); return; }
-  if(firebaseReady){ await db.collection("flytrap_uv").doc(key).set(data); return; }
-  const store = loadLocal();
-  store.uv = store.uv || {};
-  store.uv[key] = data;
-  saveLocal(store);
-}
-
-// ---------- Tabs ----------
-document.querySelectorAll(".tab-btn").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    ["grid","uv","reference","print"].forEach(t=>{
-      const el = document.getElementById("tab-"+t);
-      if(el) el.style.display = (t===btn.dataset.tab)?"block":"none";
-    });
-  });
+$('#adminbody').addEventListener('input',e=>{
+ const t=e.target,d=adm.draft; if(!d)return;
+ if(t.dataset.f) d[t.dataset.f]=t.value;
+ else if(t.dataset.li!=null) d.locs[+t.dataset.li][t.dataset.lf]=t.value;
+ else if(t.dataset.tf) d.types[t.dataset.tf]=t.value;
+});
+$('#adminbody').addEventListener('click',async e=>{
+ const b=e.target.closest('[data-adm]');if(!b)return;
+ const a=b.dataset.adm;
+ try{
+  if(a==='unlock'){
+   const pw=$('#admPw').value; const r=await api({action:'login',password:pw});
+   if(r.ok){adm.unlocked=true;adm.pw=pw;adm.draft=clone(CFG);say('')}else say('Wrong password.',1);
+  }else if(a==='create'){
+   const n=$('#admNew').value,n2=$('#admNew2').value;
+   if(n.length<4) say('Password must be at least 4 characters.',1);
+   else if(n!==n2) say('Passwords do not match.',1);
+   else{const r=await api({action:'setPassword',newPassword:n}); if(r.ok){adm.hasPw=true;adm.unlocked=true;adm.pw=n;adm.draft=clone(CFG);say('Password created.')}else say('Could not create password.',1)}
+  }else if(a==='addloc'){
+   const id=String(adm.draft.nextLocId||CFG.nextLocId||9); adm.draft.nextLocId=(+id)+1;
+   adm.draft.locs.push({id,label:id,name:''});
+  }else if(a==='delloc'){
+   if(adm.draft.locs.length<=1){say('At least one location is needed.',1)}
+   else if(confirm('Remove this location from the form? Past data stays in the sheet but will no longer show.')){adm.draft.locs.splice(+b.dataset.i,1);say('')}
+  }else if(a==='save'){
+   const d=adm.draft;
+   d.uvCount=parseInt(d.uvCount)||0;
+   if(d.uvCount<1||d.uvCount>16) say('Number of UV lamps must be between 1 and 16.',1);
+   else if(d.locs.some(l=>!String(l.name).trim()||!String(l.label).trim())) say('Every location needs a number and a name.',1);
+   else if(!d.company.trim()||!d.title.trim()) say('Company name and form title cannot be empty.',1);
+   else{
+    const r=await api({action:'saveConfig',password:adm.pw,config:d});
+    if(r.ok){applyCfg(r.config);adm.draft=clone(CFG);say('Saved. All devices will update automatically.')}
+    else if(r.error==='auth'){adm.unlocked=false;adm.pw=null;say('Password no longer valid. Please unlock again.',1)}
+    else say('Could not save: '+(r.error||'unknown error'),1);
+   }
+  }else if(a==='chpw'){
+   const n=$('#chNew').value,n2=$('#chNew2').value;
+   if(n.length<4) say('Password must be at least 4 characters.',1);
+   else if(n!==n2) say('Passwords do not match.',1);
+   else{const r=await api({action:'setPassword',password:adm.pw,newPassword:n}); if(r.ok){adm.pw=n;say('Password changed.')}else say('Could not change password.',1)}
+  }else if(a==='lock'){adm.unlocked=false;adm.pw=null;adm.draft=null;say('')}
+ }catch(err){say('Cannot reach Google Sheet.',1)}
+ renderAdmin();
 });
 
-function fillMonthSelect(sel){
-  sel.innerHTML = MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
-}
-fillMonthSelect(document.getElementById("gridMonth"));
-fillMonthSelect(document.getElementById("uvMonth"));
-
-function setStatus(id, text, ok){
-  const s = document.getElementById(id);
-  s.textContent = text;
-  s.classList.toggle("ok", !!ok);
-  s.classList.add("show");
-  if(ok) setTimeout(()=>s.classList.remove("show"), 2500);
-}
-
-// ---------- Grid entry ----------
-function buildLocationCards(){
-  const wrap = document.getElementById("locationCards");
-  wrap.innerHTML = LOCATIONS.map((loc,li)=>`
-    <div class="loc-card">
-      <h3>GFT ${li+1}: ${loc}</h3>
-      <div class="cat-grid">
-        ${CATEGORIES.map((cat,ci)=>`
-          <div class="field">
-            <label>${cat}</label>
-            <input type="number" min="0" id="cell_${li}_${ci}" placeholder="0">
-          </div>`).join("")}
-      </div>
-    </div>`).join("");
-}
-buildLocationCards();
-
-async function loadGrid(){
-  const year = document.getElementById("gridYear").value;
-  const month = parseInt(document.getElementById("gridMonth").value);
-  const week = document.getElementById("gridWeek").value;
-  setStatus("gridStatus", "Loading…", false);
-  const g = await getGridDoc(year, month);
-  LOCATIONS.forEach((loc,li)=>{
-    CATEGORIES.forEach((cat,ci)=>{
-      const val = (g[li] && g[li][ci] && g[li][ci][week]) || "";
-      document.getElementById(`cell_${li}_${ci}`).value = val;
-    });
-  });
-  document.getElementById("gridStatus").classList.remove("show");
-}
-async function saveGrid(){
-  const year = document.getElementById("gridYear").value;
-  const month = parseInt(document.getElementById("gridMonth").value);
-  const week = document.getElementById("gridWeek").value;
-  setStatus("gridStatus", "Saving…", false);
-  const g = await getGridDoc(year, month);
-  LOCATIONS.forEach((loc,li)=>{
-    if(!g[li]) g[li] = {};
-    CATEGORIES.forEach((cat,ci)=>{
-      if(!g[li][ci]) g[li][ci] = {1:"",2:"",3:"",4:"",5:""};
-      g[li][ci][week] = document.getElementById(`cell_${li}_${ci}`).value;
-    });
-  });
-  await setGridDoc(year, month, g);
-  setStatus("gridStatus", "Saved " + MONTHS[month] + " — Week " + week + " (" + year + ").", true);
-}
-document.getElementById("gridYear").addEventListener("change", loadGrid);
-document.getElementById("gridMonth").addEventListener("change", loadGrid);
-document.getElementById("gridWeek").addEventListener("change", loadGrid);
-loadGrid();
-
-// ---------- UV entry ----------
-function buildUVCheckboxes(){
-  const l1 = document.getElementById("lamp1Grid");
-  const l2 = document.getElementById("lamp2Grid");
-  l1.innerHTML = ""; l2.innerHTML = "";
-  for(let i=0;i<8;i++){
-    l1.innerHTML += `<div class="cb-item"><span>${i+1}</span><input type="checkbox" id="l1_${i}"></div>`;
-    l2.innerHTML += `<div class="cb-item"><span>${i+1}</span><input type="checkbox" id="l2_${i}"></div>`;
-  }
-}
-buildUVCheckboxes();
-
-async function loadUV(){
-  const year = document.getElementById("uvYear").value;
-  const month = parseInt(document.getElementById("uvMonth").value);
-  setStatus("uvStatus", "Loading…", false);
-  const rec = await getUvDoc(year, month);
-  for(let i=0;i<8;i++){
-    document.getElementById(`l1_${i}`).checked = !!rec.lamp1[i];
-    document.getElementById(`l2_${i}`).checked = !!rec.lamp2[i];
-  }
-  document.getElementById("actGlue").checked = !!rec.action.glue;
-  document.getElementById("actLamp1").checked = !!rec.action.lamp1;
-  document.getElementById("actLamp2").checked = !!rec.action.lamp2;
-  document.getElementById("actOthers").value = rec.action.othersText || "";
-  document.getElementById("uvChecked").value = rec.checkedBy || "";
-  document.getElementById("uvVerified").value = rec.verifiedBy || "";
-  document.getElementById("uvStatus").classList.remove("show");
-}
-async function saveUV(){
-  const year = document.getElementById("uvYear").value;
-  const month = parseInt(document.getElementById("uvMonth").value);
-  setStatus("uvStatus", "Saving…", false);
-  const rec = {
-    lamp1: [], lamp2: [],
-    action: {
-      glue: document.getElementById("actGlue").checked,
-      lamp1: document.getElementById("actLamp1").checked,
-      lamp2: document.getElementById("actLamp2").checked,
-      othersText: document.getElementById("actOthers").value
-    },
-    checkedBy: document.getElementById("uvChecked").value,
-    verifiedBy: document.getElementById("uvVerified").value
-  };
-  for(let i=0;i<8;i++){
-    rec.lamp1.push(document.getElementById(`l1_${i}`).checked);
-    rec.lamp2.push(document.getElementById(`l2_${i}`).checked);
-  }
-  await setUvDoc(year, month, rec);
-  setStatus("uvStatus", "Saved UV Light data for " + MONTHS[month] + " (" + year + ").", true);
-}
-document.getElementById("uvYear").addEventListener("change", loadUV);
-document.getElementById("uvMonth").addEventListener("change", loadUV);
-loadUV();
-
-// ---------- Pest Reference (categories/names follow the uploaded PDF appendix) ----------
-const ICONS = {
-  fly: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="32" cy="34" rx="10" ry="14"/><circle cx="32" cy="16" r="7"/><ellipse cx="18" cy="24" rx="12" ry="6" transform="rotate(-25 18 24)" opacity=".55"/><ellipse cx="46" cy="24" rx="12" ry="6" transform="rotate(25 46 24)" opacity=".55"/><path d="M24 40 L14 46 M24 44 L13 52 M40 40 L50 46 M40 44 L51 52"/></svg>`,
-  weevil: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="36" cy="34" rx="16" ry="11"/><path d="M20 32 L8 30"/><circle cx="20" cy="32" r="4"/><path d="M12 24 L16 28 M10 22 L15 27"/><path d="M22 22 L28 46 M30 20 L34 48 M38 22 L44 46 M46 24 L50 42"/></svg>`,
-  beetle: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="32" cy="36" rx="16" ry="18"/><line x1="32" y1="20" x2="32" y2="52"/><circle cx="32" cy="14" r="6"/><path d="M27 9 L22 4 M37 9 L42 4"/><path d="M20 26 L8 22 M20 36 L6 36 M20 46 L8 50 M44 26 L56 22 M44 36 L58 36 M44 46 L56 50"/></svg>`,
-  cockroach: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="32" cy="36" rx="18" ry="14"/><path d="M20 24 L10 12 M24 22 L18 8"/><path d="M16 28 L4 24 M16 36 L2 36 M16 44 L4 48 M48 28 L60 24 M48 36 L62 36 M48 44 L60 48"/></svg>`,
-  mosquito: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="34" cy="32" rx="7" ry="16" transform="rotate(20 34 32)"/><path d="M28 18 L14 6"/><ellipse cx="20" cy="24" rx="14" ry="6" transform="rotate(-15 20 24)" opacity=".5"/><path d="M30 34 L14 40 M34 38 L20 50 M38 40 L28 58 M40 30 L54 30 M42 34 L54 42"/></svg>`,
-  spider: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="30" r="9"/><circle cx="32" cy="46" r="12"/><path d="M26 24 L10 14 M22 28 L4 26 M22 34 L4 38 M26 40 L12 52 M38 24 L54 14 M42 28 L60 26 M42 34 L60 38 M38 40 L52 52"/></svg>`,
-  dragonfly: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="32" y1="10" x2="32" y2="54"/><circle cx="32" cy="10" r="5"/><ellipse cx="14" cy="22" rx="16" ry="5" transform="rotate(-8 14 22)" opacity=".5"/><ellipse cx="50" cy="22" rx="16" ry="5" transform="rotate(8 50 22)" opacity=".5"/><ellipse cx="16" cy="34" rx="15" ry="4.5" transform="rotate(-4 16 34)" opacity=".5"/><ellipse cx="48" cy="34" rx="15" ry="4.5" transform="rotate(4 48 34)" opacity=".5"/></svg>`,
-  ant: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="16" r="6"/><circle cx="32" cy="30" r="6"/><ellipse cx="32" cy="46" rx="10" ry="12"/><path d="M27 12 L18 6 M37 12 L46 6"/><path d="M25 27 L12 22 M25 32 L10 34 M25 37 L12 44 M39 27 L52 22 M39 32 L54 34 M39 37 L52 44"/></svg>`,
-  lizard: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="28" cy="32" rx="14" ry="8"/><circle cx="14" cy="26" r="5"/><path d="M40 34 Q54 40 58 54"/><path d="M20 26 L14 16 M18 40 L10 48 M36 26 L40 16 M36 40 L42 48"/></svg>`
-};
-
-const REFERENCE = [
-  { tag:"Flies", title:"House Flies & Relatives", icon:ICONS.fly,
-    names:"House Fly, Blow Fly, Fruit Fly, Drain Fly, Flesh Fly, Cluster Fly, Stable Fly, Phorid Fly, Cheese Skipper, Filter Fly, Fungus Gnat, Moth Fly, Sphaerocerid Fly, Soldier Fly, Latrine Fly, Sewer Fly, Vinegar Fly, Sand Fly, Hover Fly, Scuttle Fly, Deer Fly" },
-  { tag:"Weevils", title:"Stored-Product Weevils & Beetles", icon:ICONS.weevil,
-    names:"Rhyzopertha dominica, Sitophilus granarius, Sitophilus oryzae, Sitophilus zeamais, Trogoderma granarium, Prostephanus truncatus, Tribolium castaneum, Tribolium confusum, Cryptolestes ferrugineus, Oryzaephilus surinamensis, Oryzaephilus mercator, Cryptolestes turcicus, Gnatocerus cornutus, Lasioderma serricorne, Stegobium paniceum" },
-  { tag:"Bugs", title:"Beetles", icon:ICONS.beetle,
-    desc:"Hard, shell-like wing covers (elytra) meeting in a straight line down the back; compact oval body; various sizes and colours." },
-  { tag:"Others · 1", title:"Cockroaches", icon:ICONS.cockroach,
-    desc:"Flat oval body, long thread-like antennae, reddish-brown to dark brown, mostly active at night." },
-  { tag:"Others · 2", title:"Mosquito", icon:ICONS.mosquito,
-    desc:"Slender body, long thin legs, needle-like proboscis; often near standing water." },
-  { tag:"Others · 3", title:"Spiders", icon:ICONS.spider,
-    desc:"8 legs, two main body segments (no antennae); some spin webs." },
-  { tag:"Others · 4", title:"Dragonflies / Damselflies", icon:ICONS.dragonfly,
-    desc:"Long slender body, 2 pairs of wings. Dragonflies rest with wings out; damselflies fold theirs together." },
-  { tag:"Others · 5", title:"Ants", icon:ICONS.ant,
-    desc:"3 distinct body segments, elbowed (bent) antennae, usually seen travelling in trails." },
-  { tag:"Others · 6", title:"Lizards (Geckos)", icon:ICONS.lizard,
-    desc:"Small reptile, 4 legs, long tail; commonly found on walls/ceilings near lights." }
-];
-
-function buildReferenceGrid(){
-  const wrap = document.getElementById("refGrid");
-  wrap.innerHTML = REFERENCE.map(r => `
-    <div class="ref-card">
-      <div style="color:var(--primary-dark);">${r.icon}</div>
-      <span class="cat-tag">${r.tag}</span>
-      <h4>${r.title}</h4>
-      <p>${r.desc ? r.desc : r.names}</p>
-    </div>`).join("");
-}
-buildReferenceGrid();
-
-
-function docHeader(pageNo){
-  return `
-  <table class="hdr">
-    <tr>
-      <td class="title-cell" rowspan="4" style="width:60%;">HEXA FOOD SDN BHD (HEXA 3)<br><span style="font-weight:400;font-size:11px;">FLY TRAP INSPECTION RECORD</span></td>
-      <td style="width:20%;">Doc No</td><td style="width:20%;">HX3-F29</td>
-    </tr>
-    <tr><td>Issue No:</td><td>3</td></tr>
-    <tr><td>Issue Date:</td><td>01/01/2026</td></tr>
-    <tr><td>Page:</td><td>${pageNo}</td></tr>
-  </table>`;
-}
-
-function buildGridPage(yd, year, monthStart, pageNo){
-  const monthsSlice = MONTHS.slice(monthStart, monthStart+6);
-  let head = `<tr><th rowspan="2">GFT No</th><th rowspan="2">Category</th>`;
-  monthsSlice.forEach(m=> head += `<th colspan="5">${m}</th>`);
-  head += `</tr><tr>`;
-  monthsSlice.forEach(()=>{ for(let w=1;w<=5;w++) head += `<th>${w}</th>`; });
-  head += `</tr>`;
-
-  let body = "";
-  LOCATIONS.forEach((loc,li)=>{
-    CATEGORIES.forEach((cat,ci)=>{
-      body += `<tr>`;
-      if(ci===0) body += `<td class="loc-label" rowspan="4">${loc}</td>`;
-      body += `<td class="cat-label">${cat}</td>`;
-      monthsSlice.forEach((m,mi)=>{
-        const monthIdx = monthStart+mi;
-        for(let w=1;w<=5;w++){
-          const v = (yd.grid[li][ci][monthIdx][w]) || "";
-          body += `<td class="val-cell">${v}</td>`;
-        }
-      });
-      body += `</tr>`;
-    });
-  });
-
-  return `
-  <div class="doc-page">
-    ${docHeader(pageNo)}
-    <div style="text-align:right;font-size:10px;margin-bottom:4px;">Year: ${year}</div>
-    <table class="rep">${head}${body}</table>
-    <div class="note" style="margin-top:6px;">Remarks: For category descriptions, refer Appendix.</div>
-  </div>`;
-}
-
-function buildUVPage(yd, year, monthStart, pageNo){
-  const monthsSlice = MONTHS.slice(monthStart, monthStart+6);
-  let head = `<tr><th></th>`;
-  monthsSlice.forEach(m=> head += `<th>${m}</th>`);
-  head += `</tr>`;
-
-  function lampRow(label, key){
-    let row = `<tr><td class="loc-label">${label}<br><span style="font-weight:400;">(X if not OK)</span></td>`;
-    monthsSlice.forEach((m,mi)=>{
-      const rec = yd.uv[monthStart+mi];
-      const pts = rec[key].map((notOk,i)=> `<span class="${notOk?'notok':''}">${notOk?'X':(i+1)}</span>`).join("");
-      row += `<td><div class="uv-points">${pts}</div></td>`;
-    });
-    row += `</tr>`;
-    return row;
-  }
-
-  let actionRow = `<tr><td class="loc-label">Action Taken</td>`;
-  monthsSlice.forEach((m,mi)=>{
-    const rec = yd.uv[monthStart+mi];
-    const lines = [];
-    lines.push(`${rec.action.glue?'☑':'☐'} Change glue board`);
-    lines.push(`${rec.action.lamp1?'☑':'☐'} Change Lamp 1`);
-    lines.push(`${rec.action.lamp2?'☑':'☐'} Change Lamp 2`);
-    lines.push(`${rec.action.othersText?('☑ Others: '+rec.action.othersText):'☐ Others:'}`);
-    actionRow += `<td class="action-cell">${lines.join("<br>")}</td>`;
-  });
-  actionRow += `</tr>`;
-
-  let checkedRow = `<tr class="signrow"><td class="loc-label">Checked by</td>`;
-  monthsSlice.forEach((m,mi)=>{ checkedRow += `<td>${yd.uv[monthStart+mi].checkedBy||""}</td>`; });
-  checkedRow += `</tr>`;
-
-  let verifiedRow = `<tr class="signrow"><td class="loc-label">Verified by</td>`;
-  monthsSlice.forEach((m,mi)=>{ verifiedRow += `<td>${yd.uv[monthStart+mi].verifiedBy||""}</td>`; });
-  verifiedRow += `</tr>`;
-
-  return `
-  <div class="doc-page">
-    ${docHeader(pageNo)}
-    <table class="rep uv-table">
-      ${head}
-      ${lampRow("Condition Lamp 1","lamp1")}
-      ${lampRow("Condition Lamp 2","lamp2")}
-      ${actionRow}
-      ${checkedRow}
-      ${verifiedRow}
-    </table>
-    <div class="note" style="margin-top:6px;">Note for UV Light: Lamp must be functioning well (no broken, not blinking).</div>
-  </div>`;
-}
-
-async function renderPrint(){
-  const year = document.getElementById("printYear").value;
-  const area = document.getElementById("printArea");
-  area.innerHTML = `<p class="note">Loading data…</p>`;
-
-  const gridDocs = await Promise.all(Array.from({length:12}, (_,m)=>getGridDoc(year,m)));
-  const uvDocs = await Promise.all(Array.from({length:12}, (_,m)=>getUvDoc(year,m)));
-
-  const yd = { grid:{}, uv:{} };
-  for(let li=0; li<LOCATIONS.length; li++){
-    yd.grid[li] = {};
-    for(let ci=0; ci<CATEGORIES.length; ci++){
-      yd.grid[li][ci] = {};
-      for(let m=0;m<12;m++){
-        yd.grid[li][ci][m] = (gridDocs[m][li] && gridDocs[m][li][ci]) || {1:"",2:"",3:"",4:"",5:""};
-      }
-    }
-  }
-  for(let m=0;m<12;m++) yd.uv[m] = uvDocs[m];
-
-  area.innerHTML =
-    buildGridPage(yd, year, 0, "1 of 4") +
-    buildUVPage(yd, year, 0, "2 of 4") +
-    buildGridPage(yd, year, 6, "3 of 4") +
-    buildUVPage(yd, year, 6, "4 of 4");
-}
-renderPrint();
-</script>
-</body>
-</html>
+applyChrome(); buildSheets(); fillTrendSelects();
+initFillControls(); loadYear();
+</script></body></html>
